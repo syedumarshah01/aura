@@ -1,0 +1,36 @@
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Node/JavaScript
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Next.js
+.next/
+out/
+build/
+.swc/
+
+# Logs & Databases
+*.log
+*.sqlite
+*.sqlite3
+
+# Data Streams
+pipeline/data/scraped_raw.jsonl
+pipeline/data/ai_processed.jsonl
+
+# OS generated files
+.DS_Store
+Thumbs.db
