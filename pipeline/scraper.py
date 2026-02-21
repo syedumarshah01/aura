@@ -124,7 +124,15 @@ async def extract_product_details(context, product_url, subcategory_name, sem):
             }''')
             data['url'] = product_url
             data['subcategory'] = subcategory_name
-            print(f"    Extracted: {data['title'][:30]}...")
+            
+            # Immediately stream output directly to avoid pipeline blocking
+            new_imgs = [upload_to_cloudinary(img) for img in data['images']]
+            data['images'] = new_imgs
+            jsonl_path = os.path.join(os.path.dirname(__file__), 'data', 'scraped_raw.jsonl')
+            with open(jsonl_path, 'a', encoding='utf-8') as f:
+                f.write(json.dumps(data) + '\n')
+                
+            print(f"    Extracted & Streamed: {data['title'][:30]}...")
             return data
         except Exception as e:
             print(f"Error {product_url}: {e}")
@@ -157,16 +165,7 @@ async def main():
             print(f" Found {len(product_links)} products to extract concurrently.")
             
             tasks = [extract_product_details(context, p_url, subcategory_name, sem) for p_url in product_links]
-            results = await asyncio.gather(*tasks)
-            
-            for detail in results:
-                if detail and detail.get('title'):
-                    new_images = [upload_to_cloudinary(img) for img in detail['images']]
-                    detail['images'] = new_images
-                    
-                    jsonl_path = os.path.join(os.path.dirname(__file__), 'data', 'scraped_raw.jsonl')
-                    with open(jsonl_path, 'a', encoding='utf-8') as f:
-                        f.write(json.dumps(detail) + '\\n')
+            await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
     asyncio.run(main())

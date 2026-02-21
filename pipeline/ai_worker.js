@@ -53,6 +53,8 @@ async function processQueue() {
             try {
                 product = JSON.parse(line);
             } catch (e) {
+                console.error(`❌ [Stage 2] Failed to parse line ${i}. Skipping.`);
+                lastProcessedIndex = i + 1;
                 continue;
             }
 
