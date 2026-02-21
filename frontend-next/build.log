@@ -1,0 +1,54 @@
+
+> frontend-next@0.1.0 build
+> next build
+
+ ⚠ Disabling SWC Minifer will not be an option in the next major version. Please report any issues you may be experiencing to https://github.com/vercel/next.js/issues
+  ▲ Next.js 14.2.3
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./components/FeaturedProducts.js
+Error: 
+  [31mx[0m Expected unicode escape
+    ,-[[36;1;4mC:\Users\sws\Desktop\naheed-scraper\frontend-next\components\FeaturedProducts.js[0m:18:1]
+ [2m18[0m |             try {
+ [2m19[0m |                 const response = await fetch(`http://localhost:5000/api/products?page=${page}&limit=${limit}`);
+ [2m20[0m |                 if (!response.ok) {
+ [2m21[0m |                     throw new Error(\`HTTP error! status: \${response.status}\`);
+    : [31;1m                                    ^[0m
+ [2m22[0m |         }
+ [2m23[0m |         const data = await response.json();
+ [2m23[0m |         setProducts(data.products);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/FeaturedProducts.js
+./app/page.js
+
+./components/InteractiveClientWrapper.js
+Error: 
+  [31mx[0m Expected unicode escape
+    ,-[[36;1;4mC:\Users\sws\Desktop\naheed-scraper\frontend-next\components\InteractiveClientWrapper.js[0m:69:1]
+ [2m69[0m |     return (
+ [2m70[0m |         <>
+ [2m71[0m |             {/* We inject the toggle logic into the DOM via portal pattern or context, but for simplicity, we attach a global click listener to hamburger here */}
+ [2m72[0m |             <style jsx global>{\`
+    : [31;1m                               ^[0m
+ [2m73[0m |                 .mobile-menu {
+ [2m74[0m |                     transform: \${isMenuOpen ? 'translateY(0)' : 'translateY(-100%)'};
+ [2m74[0m |         }
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/InteractiveClientWrapper.js
+./app/page.js
+
+
+> Build failed because of webpack errors

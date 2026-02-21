@@ -1,0 +1,22 @@
+
+> frontend-next@0.1.0 build
+> next build
+
+ ⚠ Disabling SWC Minifer will not be an option in the next major version. Please report any issues you may be experiencing to https://github.com/vercel/next.js/issues
+  ▲ Next.js 14.2.3
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./app/collections/page.js
+Module not found: Can't resolve '../components/InfiniteProductsGrid'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/collections/page.js
+Module not found: Can't resolve '../components/InteractiveClientWrapper'
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors
