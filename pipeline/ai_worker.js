@@ -1,13 +1,10 @@
-require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-
-// Initialize Gemini API
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const RAW_FILE = path.join(__dirname, 'data/scraped_raw.jsonl');
 const PROCESSED_FILE = path.join(__dirname, 'data/ai_processed.jsonl');
+const OLLAMA_URL = 'http://localhost:11434/api/generate';
+const OLLAMA_MODEL = 'llama3.2:3b';
 
 if (!fs.existsSync(RAW_FILE)) fs.writeFileSync(RAW_FILE, '');
 if (!fs.existsSync(PROCESSED_FILE)) fs.writeFileSync(PROCESSED_FILE, '');
@@ -26,19 +23,46 @@ console.log(`✅ Stage 2 Resumption State: Loaded ${processedUrls.size} previous
 let lastProcessedIndex = 0;
 let isProcessing = false;
 
-async function fileToGenerativePart(url) {
+async function generateOllamaCopy(productTitle) {
+    const systemPrompt = `You are a high-end luxury e-commerce copywriter writing for a premium cosmetics and beauty brand called Aura. 
+Your goal is to write completely human-like, sensory, and appealing copy based ONLY on the product title provided. 
+Do NOT use robotic AI jargon like "Elevate your routine", "Unlock", or "Discover the secret". Speak directly to the senses and benefits.
+
+Product Title: "${productTitle}"
+
+Output strictly valid JSON with exactly two fields. Do not include markdown formatting or extra text outside the JSON object.
+1. "description": A 2-sentence sensory and premium description of the product.
+2. "highlights": An array of 3 short, punchy benefit-driven feature strings.`;
+
     try {
-        const response = await fetch(url);
-        const arrayBuffer = await response.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        return {
-            inlineData: {
-                data: buffer.toString('base64'),
-                mimeType: response.headers.get('content-type') || 'image/jpeg'
-            }
-        };
-    } catch (err) {
-        console.error(`Error fetching image from ${url}:`, err);
+        const response = await fetch(OLLAMA_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: OLLAMA_MODEL,
+                prompt: systemPrompt,
+                stream: false,
+                format: "json"
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Ollama HTTP Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Scrub markdown codeblocks the 3B model might wrap around its JSON
+        const rawText = data.response.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const generatedJSON = JSON.parse(rawText);
+
+        if (generatedJSON.description && Array.isArray(generatedJSON.highlights)) {
+            return generatedJSON;
+        } else {
+            throw new Error("Ollama returned invalid Schema");
+        }
+    } catch (error) {
+        console.error(`❌ Ollama Generation Error for '${productTitle}':`, error.message);
         return null;
     }
 }
@@ -50,11 +74,6 @@ async function processQueue() {
     try {
         const content = fs.readFileSync(RAW_FILE, 'utf-8');
         const lines = content.split('\n');
-
-        const model = genAI.getGenerativeModel({
-            model: "gemini-2.5-flash",
-            generationConfig: { responseMimeType: "application/json" }
-        });
 
         for (let i = lastProcessedIndex; i < lines.length - 1; i++) {
             const line = lines[i].trim();
@@ -74,53 +93,26 @@ async function processQueue() {
                 continue;
             }
 
-            console.log(`\n⏳ [Stage 2] Generating AI data for: ${product.title}`);
+            console.log(`\n⏳ [Stage 2] Requesting Local Ollama Copy for: ${product.title}`);
 
-            const prompt = `You are an expert e-commerce copywriter. Based on the product title and image provided, generate a compelling, premium e-commerce product description (3-4 sentences maximum) and a list of 3-5 key feature highlights. 
-Product Title: "${product.title}"
+            const aiCopy = await generateOllamaCopy(product.title);
 
-Return ONLY a strictly valid JSON object with exactly these two keys: 
-"description" (String)
-"highlights" (Array of Strings).`;
-
-            let imagePart = null;
-            if (product.images && product.images.length > 0) {
-                imagePart = await fileToGenerativePart(product.images[0]);
-            }
-
-            if (imagePart) {
-                let retry = true;
-                while (retry) {
-                    try {
-                        const result = await model.generateContent([prompt, imagePart]);
-                        const responseText = result.response.text();
-                        const generatedData = JSON.parse(responseText.replace(/```json/g, '').replace(/```/g, '').trim());
-
-                        if (generatedData.description && Array.isArray(generatedData.highlights)) {
-                            product.description = generatedData.description;
-                            product.highlights = generatedData.highlights;
-                            console.log(`✅ [Stage 2] AI Copy Attached: ${product.url}`);
-                        }
-                        retry = false;
-                    } catch (genErr) {
-                        if (genErr.message.includes('429')) {
-                            console.log(`\n⏳ Rate limit hit (429). Pausing for 60 seconds...`);
-                            await new Promise(resolve => setTimeout(resolve, 60000));
-                        } else {
-                            console.error(`❌ Error generating content:`, genErr.message);
-                            retry = false;
-                        }
-                    }
-                }
+            if (aiCopy) {
+                product.description = aiCopy.description;
+                product.highlights = aiCopy.highlights;
+                console.log(`✅ [Stage 2] Ollama JSON Attached: ${product.url}`);
             } else {
-                console.log(`⚠️ Skipping image generation, missing valid image for: ${product.url}`);
+                console.log(`⚠️ Falling back to default copy for: ${product.url}`);
+                product.description = "A quintessential addition to your daily routine, crafted with excellence to deliver unparalleled results.";
+                product.highlights = ["Premium Quality", "Ethically Sourced", "Long-lasting Wear"];
             }
 
             fs.appendFileSync(PROCESSED_FILE, JSON.stringify(product) + '\n');
             processedUrls.add(product.url);
             lastProcessedIndex = i + 1;
 
-            await new Promise(resolve => setTimeout(resolve, 4000));
+            // Optional structural delay to prevent memory spike bursts during local inference
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
 
     } catch (err) {
@@ -130,7 +122,7 @@ Return ONLY a strictly valid JSON object with exactly these two keys:
     isProcessing = false;
 }
 
-console.log("🚀 Stage 2: AI Processor started. Tailing scraped_raw.jsonl...");
+console.log(`🚀 Stage 2: Independent Ollama (${OLLAMA_MODEL}) Processor started. Tailing scraped_raw.jsonl...`);
 
 setInterval(processQueue, 3000);
 processQueue();
