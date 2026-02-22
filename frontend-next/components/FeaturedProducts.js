@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
+import Image from 'next/image';
 
 export default function FeaturedProducts() {
     const [products, setProducts] = useState([]);
@@ -110,12 +111,15 @@ export default function FeaturedProducts() {
                                         <span className="tag">Bestseller</span>
                                     )}
                                 </div>
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={hoveredProduct === product._id ? hoverImage : mainImage}
-                                    alt={cleanTitle(product.title)}
-                                    loading="lazy"
-                                />
+                                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                    <Image
+                                        src={hoveredProduct === product._id ? hoverImage : mainImage}
+                                        alt={cleanTitle(product.title)}
+                                        fill
+                                        style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    />
+                                </div>
                                 <button
                                     className="add-to-cart"
                                     disabled={isSoldOut}

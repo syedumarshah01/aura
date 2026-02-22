@@ -1,5 +1,6 @@
 import FeaturedProducts from '../components/FeaturedProducts';
 import InteractiveClientWrapper from '../components/InteractiveClientWrapper';
+import Image from 'next/image';
 
 export default function Home() {
     return (
@@ -51,8 +52,19 @@ export default function Home() {
                 <section id="about" className="about">
                     <div className="about-grid">
                         <div className="about-image reveal-left">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1200&auto=format&fit=crop" alt="Pouring skincare serum" loading="lazy" />
+                            <Image
+                                src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1200&auto=format&fit=crop"
+                                alt="Pouring skincare serum"
+                                width={800}
+                                height={600}
+                                style={{
+                                    position: 'relative',
+                                    zIndex: 1,
+                                    height: '600px',
+                                    objectFit: 'cover',
+                                    width: '100%'
+                                }}
+                            />
                         </div>
                         <div className="about-text reveal-right">
                             <h2>Nature Meets <br /><em>Science</em></h2>

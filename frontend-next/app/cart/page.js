@@ -2,10 +2,14 @@
 
 import { useCart } from '../../context/CartContext';
 import InteractiveClientWrapper from '../../components/InteractiveClientWrapper';
+import CheckoutModal from '../../components/CheckoutModal';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
 
 export default function CartPage() {
     const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
     const formatPrice = (priceStr) => priceStr || 'Price TBA';
     const cleanTitle = (title) => title ? title.replace(/^(?:Buy|Purchase|Order)\s+/i, '').replace(/\s*(?:-|\|)?\s*(?:Online at best price in pakistan|naheed\.pk)\s*/ig, '').trim() : '';
@@ -48,8 +52,9 @@ export default function CartPage() {
                                         }}>
                                             <Link href={`/product/${item._id}`}>
                                                 <div style={{ width: '120px', height: '120px', backgroundColor: 'var(--clr-bg)', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img src={imgUrl} alt={title} style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+                                                    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                                        <Image src={imgUrl} alt={title} fill style={{ objectFit: 'contain', mixBlendMode: 'multiply' }} sizes="120px" />
+                                                    </div>
                                                 </div>
                                             </Link>
 
@@ -99,7 +104,7 @@ export default function CartPage() {
                                     <span style={{ color: 'var(--clr-primary-dark)' }}>PKR {cartTotal.toLocaleString()}</span>
                                 </div>
 
-                                <button className="primary-btn" style={{ width: '100%', padding: '1.2rem' }} onClick={() => alert('Checkout flow seamlessly initiated.')}>
+                                <button className="primary-btn" style={{ width: '100%', padding: '1.2rem' }} onClick={() => setIsCheckoutOpen(true)}>
                                     Proceed to Checkout
                                 </button>
 
@@ -111,6 +116,7 @@ export default function CartPage() {
                     )}
                 </div>
             </main>
+            <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} />
         </InteractiveClientWrapper>
     );
 }

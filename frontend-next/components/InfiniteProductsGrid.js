@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
+import Image from 'next/image';
 
 export default function InfiniteProductsGrid() {
     const [products, setProducts] = useState([]);
@@ -111,14 +112,16 @@ export default function InfiniteProductsGrid() {
                                         <span className="tag">In Stock</span>
                                     )}
                                 </div>
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={hoveredProduct === product._id ? hoverImage : mainImage}
-                                    alt={cleanTitle(product.title)}
-                                    loading="lazy"
-                                    style={{ transition: 'opacity 0.4s ease-in-out' }}
-                                    onLoad={(e) => e.target.style.opacity = 1}
-                                />
+                                <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '300px' }}>
+                                    <Image
+                                        src={hoveredProduct === product._id ? hoverImage : mainImage}
+                                        alt={cleanTitle(product.title)}
+                                        fill
+                                        style={{ objectFit: 'contain', mixBlendMode: 'multiply', transition: 'opacity 0.4s ease-in-out' }}
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        onLoad={(e) => e.target.style.opacity = 1}
+                                    />
+                                </div>
                                 <button
                                     className="add-to-cart"
                                     disabled={isSoldOut}
