@@ -5,9 +5,13 @@ const mongoose = require('mongoose');
 const Product = require('./Product');
 
 const PROCESSED_FILE = path.join(__dirname, 'data/ai_processed.jsonl');
-if (!fs.existsSync(PROCESSED_FILE)) fs.writeFileSync(PROCESSED_FILE, '');
+const CURSOR_FILE = path.join(__dirname, 'data/db_cursor.txt');
 
-let lastProcessedIndex = 0;
+if (!fs.existsSync(PROCESSED_FILE)) fs.writeFileSync(PROCESSED_FILE, '');
+if (!fs.existsSync(CURSOR_FILE)) fs.writeFileSync(CURSOR_FILE, '0');
+
+let lastProcessedIndex = parseInt(fs.readFileSync(CURSOR_FILE, 'utf-8'), 10) || 0;
+console.log(`✅ Stage 3 Resumption State: Loaded Atlas Cursor at index ${lastProcessedIndex}.`);
 let isProcessing = false;
 
 async function processQueue() {
@@ -46,6 +50,7 @@ async function processQueue() {
             }
 
             lastProcessedIndex = i + 1;
+            fs.writeFileSync(CURSOR_FILE, lastProcessedIndex.toString());
         }
 
     } catch (err) {

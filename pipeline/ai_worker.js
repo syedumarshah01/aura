@@ -12,6 +12,17 @@ const PROCESSED_FILE = path.join(__dirname, 'data/ai_processed.jsonl');
 if (!fs.existsSync(RAW_FILE)) fs.writeFileSync(RAW_FILE, '');
 if (!fs.existsSync(PROCESSED_FILE)) fs.writeFileSync(PROCESSED_FILE, '');
 
+const processedUrls = new Set();
+const pContent = fs.readFileSync(PROCESSED_FILE, 'utf-8');
+pContent.split('\n').filter(Boolean).forEach(line => {
+    try {
+        const p = JSON.parse(line);
+        if (p.url) processedUrls.add(p.url);
+    } catch (e) { }
+});
+
+console.log(`✅ Stage 2 Resumption State: Loaded ${processedUrls.size} previously processed products.`);
+
 let lastProcessedIndex = 0;
 let isProcessing = false;
 
@@ -54,6 +65,11 @@ async function processQueue() {
                 product = JSON.parse(line);
             } catch (e) {
                 console.error(`❌ [Stage 2] Failed to parse line ${i}. Skipping.`);
+                lastProcessedIndex = i + 1;
+                continue;
+            }
+
+            if (processedUrls.has(product.url)) {
                 lastProcessedIndex = i + 1;
                 continue;
             }
@@ -101,6 +117,7 @@ Return ONLY a strictly valid JSON object with exactly these two keys:
             }
 
             fs.appendFileSync(PROCESSED_FILE, JSON.stringify(product) + '\n');
+            processedUrls.add(product.url);
             lastProcessedIndex = i + 1;
 
             await new Promise(resolve => setTimeout(resolve, 4000));
