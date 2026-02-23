@@ -79,7 +79,7 @@ export default async function ProductPage({ params }) {
                 </div>
 
                 <div style={{ backgroundColor: 'var(--clr-surface)', padding: '4rem 0' }}>
-                    <RelatedProducts currentProductId={product._id} />
+                    <RelatedProducts currentProductId={product._id} subcategory={product.subcategory} />
                 </div>
             </main>
         </InteractiveClientWrapper>

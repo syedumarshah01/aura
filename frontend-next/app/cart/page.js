@@ -2,14 +2,11 @@
 
 import { useCart } from '../../context/CartContext';
 import InteractiveClientWrapper from '../../components/InteractiveClientWrapper';
-import CheckoutModal from '../../components/CheckoutModal';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
 
 export default function CartPage() {
     const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
-    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
     const formatPrice = (priceStr) => priceStr || 'Price TBA';
     const cleanTitle = (title) => title ? title.replace(/^(?:Buy|Purchase|Order)\s+/i, '').replace(/\s*(?:-|\|)?\s*(?:Online at best price in pakistan|naheed\.pk)\s*/ig, '').trim() : '';
@@ -104,9 +101,9 @@ export default function CartPage() {
                                     <span style={{ color: 'var(--clr-primary-dark)' }}>PKR {cartTotal.toLocaleString()}</span>
                                 </div>
 
-                                <button className="primary-btn" style={{ width: '100%', padding: '1.2rem' }} onClick={() => setIsCheckoutOpen(true)}>
+                                <Link href="/checkout" className="primary-btn" style={{ display: 'block', textAlign: 'center', width: '100%', padding: '1.2rem', textDecoration: 'none' }}>
                                     Proceed to Checkout
-                                </button>
+                                </Link>
 
                                 <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--clr-text-muted)', marginTop: '1.5rem' }}>
                                     Secure checkout with Aura Premium.
@@ -116,7 +113,6 @@ export default function CartPage() {
                     )}
                 </div>
             </main>
-            <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} />
         </InteractiveClientWrapper>
     );
 }
