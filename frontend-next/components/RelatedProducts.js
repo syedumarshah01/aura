@@ -13,7 +13,7 @@ export default function RelatedProducts({ currentProductId }) {
             try {
                 // Fetch a generic page to simulate "related" or "you may also like"
                 const pageNum = Math.floor(Math.random() * 5) + 1; // Random page simulating related
-                const response = await fetch(`http://localhost:5000/api/products?page=${pageNum}&limit=4`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products?page=${pageNum}&limit=4`);
                 if (response.ok) {
                     const data = await response.json();
                     // Filter out the current product just in case

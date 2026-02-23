@@ -19,7 +19,7 @@ export default function FeaturedProducts() {
             setLoading(true);
             setError(null);
             try {
-                const response = await fetch(`http://localhost:5000/api/products?page=${page}&limit=${limit}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products?page=${page}&limit=${limit}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

@@ -61,7 +61,7 @@ export default function TrackOrderPage() {
         setOrder(null);
 
         try {
-            const res = await fetch(`http://localhost:5000/api/orders/track/${orderNumber.trim().toUpperCase()}`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/orders/track/${orderNumber.trim().toUpperCase()}`);
             const data = await res.json();
 
             if (!res.ok) throw new Error(data.message || 'Order not found.');

@@ -49,7 +49,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
         setHasSearched(true);
         try {
             const res = await fetch(
-                `http://localhost:5000/api/products?keyword=${encodeURIComponent(searchQuery)}&limit=6`
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products?keyword=${encodeURIComponent(searchQuery)}&limit=6`
             );
             const data = await res.json();
             // Clean up image URLs

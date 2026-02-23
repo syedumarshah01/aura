@@ -19,7 +19,7 @@ export default function InfiniteProductsGrid() {
     const fetchProducts = useCallback(async (pageNum) => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:5000/api/products?page=${pageNum}&limit=${limit}`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products?page=${pageNum}&limit=${limit}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

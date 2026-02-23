@@ -7,7 +7,7 @@ export async function generateMetadata({ params }) {
     const { id } = params;
 
     try {
-        const response = await fetch(`http://localhost:5000/api/products/${id}`, { cache: 'no-store' });
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products/${id}`, { cache: 'no-store' });
         if (!response.ok) return { title: 'Product Not Found | Aura' };
 
         const product = await response.json();
@@ -36,7 +36,7 @@ export default async function ProductPage({ params }) {
 
     try {
         // Fetch data natively on the Server before sending HTML to the browser
-        const response = await fetch(`http://localhost:5000/api/products/${id}`, { cache: 'no-store' });
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products/${id}`, { cache: 'no-store' });
 
         if (!response.ok) {
             if (response.status === 404) return notFound();
