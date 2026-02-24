@@ -395,6 +395,20 @@ img {
     transition: all var(--transition-fast);
 }
 
+/* Hamburger → X animation */
+.hamburger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.hamburger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
 /* Mobile Menu */
 .mobile-menu {
     position: fixed;
@@ -853,8 +867,68 @@ footer {
 }
 
 /* ==========================================================================
-   Breakpoints & Media Queries
+   Breakpoints & Media Queries — Mobile First
    ========================================================================== */
+
+/* ── Touch / Hover Targets ── */
+@media (hover: none) {
+
+    /* On touch devices make add-to-cart always visible */
+    .add-to-cart {
+        transform: translateY(0);
+        font-size: 0.7rem;
+        padding: 0.7rem 1rem;
+    }
+}
+
+/* ── Utility responsive classes used by inline-style grids ── */
+/* These are applied via className on page components */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.grid-contact {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+}
+
+.faq-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.faq-sidebar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    position: static;
+}
+
+/* ── Small phones ── */
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 2.8rem;
+    }
+
+    .newsletter-content h2 {
+        font-size: 1.6rem;
+    }
+
+    .logo {
+        font-size: 1.4rem;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+}
+
+/* ── Tablets and up (768px) ── */
 @media (min-width: 768px) {
     .values {
         grid-template-columns: repeat(3, 1fr);
@@ -881,8 +955,29 @@ footer {
     .subscribe-form input {
         flex-grow: 1;
     }
+
+    .grid-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .grid-contact {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+        gap: 4rem;
+    }
+
+    .faq-layout {
+        grid-template-columns: 200px 1fr;
+        gap: 4rem;
+    }
+
+    .faq-sidebar {
+        display: block;
+        position: sticky;
+        top: 7rem;
+    }
 }
 
+/* ── Desktop (1024px) ── */
 @media (min-width: 1024px) {
     .nav-links {
         display: flex;
@@ -908,6 +1003,7 @@ footer {
         opacity: 1;
     }
 }
+
 
 /* ==========================================================================
    Animations

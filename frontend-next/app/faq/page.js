@@ -102,10 +102,10 @@ export default function FAQPage() {
                     </p>
                 </div>
 
-                <div style={{ maxWidth: '960px', margin: '0 auto', padding: '0 2rem', display: 'grid', gridTemplateColumns: '200px 1fr', gap: '4rem', alignItems: 'start' }}>
+                <div className="faq-layout" style={{ maxWidth: '960px', margin: '0 auto', padding: '0 2rem', alignItems: 'start' }}>
 
                     {/* Category Sidebar */}
-                    <div style={{ position: 'sticky', top: '7rem' }}>
+                    <div className="faq-sidebar">
                         {faqs.map(({ category }) => (
                             <button
                                 key={category}

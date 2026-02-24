@@ -162,7 +162,7 @@ export default function ReturnsPage() {
                             {/* Section 1: Order Info */}
                             <div>
                                 <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--clr-border)' }}>Order Details</h2>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div className="grid-2">
                                     <div>
                                         <label style={labelStyle}>Order Number <span style={{ color: 'var(--clr-primary-dark)' }}>*</span></label>
                                         <input style={inputStyle} type="text" name="orderNumber" value={formData.orderNumber} onChange={handleChange} required placeholder="AUR-XXXXXXXX" onFocus={focusIn} onBlur={focusOut} />
@@ -202,7 +202,7 @@ export default function ReturnsPage() {
                                         <textarea style={{ ...inputStyle, minHeight: '90px', resize: 'vertical', lineHeight: 1.6 }} name="returnItems" value={formData.returnItems} onChange={handleChange} required placeholder={'e.g. Neutrogena Hydro Boost Gel\nMaybelline Fit Me Foundation 220'} onFocus={focusIn} onBlur={focusOut} />
                                     </div>
 
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                    <div className="grid-2">
                                         <div>
                                             <label style={labelStyle}>Item Condition <span style={{ color: 'var(--clr-primary-dark)' }}>*</span></label>
                                             <select style={{ ...inputStyle, cursor: 'pointer' }} name="condition" value={formData.condition} onChange={handleChange} required onFocus={focusIn} onBlur={focusOut}>

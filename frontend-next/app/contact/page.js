@@ -63,7 +63,7 @@ export default function ContactPage() {
                     </p>
                 </div>
 
-                <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 2rem', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.6fr)', gap: '4rem', alignItems: 'start' }}>
+                <div className="grid-contact" style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 2rem', alignItems: 'start' }}>
 
                     {/* Left: Info Panel */}
                     <div className="fade-in-up" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
