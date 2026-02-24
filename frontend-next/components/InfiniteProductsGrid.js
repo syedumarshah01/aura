@@ -119,13 +119,13 @@ export default function InfiniteProductsGrid({ category = '' }) {
                                         <span className="tag">In Stock</span>
                                     )}
                                 </div>
-                                <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '300px' }}>
+                                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                                     <Image
-                                        src={hoveredProduct === product._id ? hoverImage : mainImage}
+                                        src={hoveredProduct === product._id ? (product.images?.[1] || product.images?.[0]) : (product.images?.[0] || 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop')}
                                         alt={cleanTitle(product.title)}
                                         fill
-                                        style={{ objectFit: 'contain', mixBlendMode: 'multiply', transition: 'opacity 0.4s ease-in-out' }}
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        style={{ objectFit: 'contain', transition: 'opacity 0.4s ease-in-out' }}
+                                        sizes="(max-width: 480px) 50vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                         onLoad={(e) => e.target.style.opacity = 1}
                                     />
                                 </div>

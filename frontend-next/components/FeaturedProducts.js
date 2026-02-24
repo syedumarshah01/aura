@@ -115,8 +115,8 @@ export default function FeaturedProducts() {
                                         src={hoveredProduct === product._id ? hoverImage : mainImage}
                                         alt={title}
                                         fill
-                                        style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
-                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                                        style={{ objectFit: 'contain' }}
+                                        sizes="(max-width: 480px) 50vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                     />
                                 </div>
                                 <button
