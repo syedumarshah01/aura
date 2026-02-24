@@ -1,66 +1,70 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function FeaturedProducts() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const limit = 8;
     const [hoveredProduct, setHoveredProduct] = useState(null);
     const { addToCart } = useCart();
 
-    useEffect(() => {
-        async function fetchProducts() {
-            setLoading(true);
-            setError(null);
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products?page=${page}&limit=${limit}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                setProducts(data.products);
-                setPage(data.page);
-                setTotalPages(data.pages);
-            } catch (err) {
-                console.error("Could not fetch products:", err);
-                setError("Failed to load products from database.");
-            } finally {
-                setTimeout(() => setLoading(false), 300); // Small delay to allow CSS transitions
-            }
+    const fetchTrending = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products/trending?limit=8`
+            );
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            setProducts(data);
+        } catch (err) {
+            console.error('Could not fetch trending products:', err);
+            setError('Failed to load trending products.');
+        } finally {
+            setTimeout(() => setLoading(false), 300);
         }
+    }, []);
 
-        fetchProducts();
-    }, [page]);
+    useEffect(() => { fetchTrending(); }, [fetchTrending]);
 
-    const handlePrev = () => {
-        if (page > 1) {
-            setPage(page - 1);
-            document.getElementById('featured')?.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
+    const cleanTitle = (title) =>
+        title
+            ? title
+                .replace(/^(?:Buy|Purchase|Order)\s+/i, '')
+                .replace(/\s*(?:-|\|)?\s*(?:Online at best price in pakistan|naheed\.pk)\s*/ig, '')
+                .trim()
+            : '';
 
-    const handleNext = () => {
-        if (page < totalPages) {
-            setPage(page + 1);
-            document.getElementById('featured')?.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
+    const formatPrice = (p) => p || 'TBA';
 
-    const formatPrice = (priceStr) => {
-        return priceStr || 'TBA';
-    };
+    // Format subcategory for display: "foundation" → "Foundation"
+    const fmtCat = (s) => s ? s.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
 
     return (
         <section id="featured" className="featured-products">
-            <div className="section-header">
+            <div className="section-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <h2>Trending <em>Selections</em></h2>
-                <p>Discover what our community is loving right now.</p>
+                <p>One pick from every category — refreshed just for you.</p>
+
+                {/* Refresh button */}
+                {!loading && (
+                    <button
+                        onClick={fetchTrending}
+                        className="outline-btn"
+                        style={{ marginTop: '1.25rem', gap: '0.5rem', display: 'inline-flex', alignItems: 'center' }}
+                        aria-label="Load a new set of trending picks"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 .49-3.51" />
+                        </svg>
+                        New Picks
+                    </button>
+                )}
             </div>
 
             {loading && (
@@ -71,19 +75,14 @@ export default function FeaturedProducts() {
             )}
 
             {error && !loading && (
-                <div style={{ textAlign: 'center', gridColumn: '1 / -1', padding: '2rem' }}>
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginBottom: '1rem', color: '#cc0000' }}>
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <p>{error}</p>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--clr-text-muted)', marginTop: '0.5rem' }}>Is the backend running on http://localhost:5000?</p>
+                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                    <p style={{ color: '#cc0000' }}>{error}</p>
+                    <button className="outline-btn" onClick={fetchTrending} style={{ marginTop: '1rem' }}>Try Again</button>
                 </div>
             )}
 
             {!loading && !error && products.length === 0 && (
-                <p style={{ textAlign: 'center', gridColumn: '1 / -1' }}>No products found.</p>
+                <p style={{ textAlign: 'center' }}>No products found.</p>
             )}
 
             <div className={`product-grid ${!loading ? 'loaded' : ''}`}>
@@ -91,15 +90,15 @@ export default function FeaturedProducts() {
                     const mainImage = product.images?.[0] || 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop';
                     const hoverImage = product.images?.[1] || mainImage;
                     const isSoldOut = !product.in_stock;
-
-                    const cleanTitle = (title) => title ? title.replace(/^(?:Buy|Purchase|Order)\s+/i, '').replace(/\s*(?:-|\|)?\s*(?:Online at best price in pakistan|naheed\.pk)\s*/ig, '').trim() : '';
+                    const title = cleanTitle(product.title);
+                    const catLabel = fmtCat(product.subcategory);
 
                     return (
                         <a
                             href={`/product/${product._id}`}
                             key={product._id}
                             className="product-card"
-                            style={{ animationDelay: `${index * 0.1}s`, textDecoration: 'none', color: 'inherit' }}
+                            style={{ animationDelay: `${index * 0.07}s`, textDecoration: 'none', color: 'inherit' }}
                             onMouseEnter={() => setHoveredProduct(product._id)}
                             onMouseLeave={() => setHoveredProduct(null)}
                         >
@@ -108,33 +107,30 @@ export default function FeaturedProducts() {
                                     {isSoldOut ? (
                                         <span className="tag sold-out">Sold Out</span>
                                     ) : (
-                                        <span className="tag">Bestseller</span>
+                                        <span className="tag">{catLabel || 'Trending'}</span>
                                     )}
                                 </div>
                                 <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                                     <Image
                                         src={hoveredProduct === product._id ? hoverImage : mainImage}
-                                        alt={cleanTitle(product.title)}
+                                        alt={title}
                                         fill
                                         style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                     />
                                 </div>
                                 <button
                                     className="add-to-cart"
                                     disabled={isSoldOut}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        addToCart(product);
-                                    }}
+                                    onClick={(e) => { e.preventDefault(); addToCart(product); }}
                                 >
-                                    {isSoldOut ? 'Notify Me' : 'Add to Bag'}
+                                    {isSoldOut ? 'Out of Stock' : 'Add to Bag'}
                                 </button>
                             </div>
                             <div className="product-info">
-                                <div className="product-brand">Aura Select</div>
-                                <h3 className="product-title" title={cleanTitle(product.title)}>
-                                    {cleanTitle(product.title).split(' - ')[0] || cleanTitle(product.title)}
+                                <div className="product-brand">{catLabel || 'Aura Select'}</div>
+                                <h3 className="product-title" title={title}>
+                                    {title.split(' - ')[0] || title}
                                 </h3>
                                 <div className="product-price">{formatPrice(product.price)}</div>
                             </div>
@@ -143,23 +139,12 @@ export default function FeaturedProducts() {
                 })}
             </div>
 
-            {!loading && !error && totalPages > 1 && (
-                <div className="pagination" style={{ display: 'flex' }}>
-                    <button
-                        onClick={handlePrev}
-                        className="outline-btn"
-                        disabled={page === 1}
-                    >
-                        Previous
-                    </button>
-                    <span>Page {page} of {totalPages}</span>
-                    <button
-                        onClick={handleNext}
-                        className="outline-btn"
-                        disabled={page === totalPages}
-                    >
-                        Next
-                    </button>
+            {/* View all CTA */}
+            {!loading && !error && products.length > 0 && (
+                <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+                    <Link href="/collections" className="cta-btn" style={{ textDecoration: 'none' }}>
+                        Browse All Collections
+                    </Link>
                 </div>
             )}
         </section>

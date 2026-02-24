@@ -78,8 +78,49 @@ const getCategories = async (req, res) => {
     }
 };
 
+// @desc    Fetch trending products — one per category for diversity
+// @route   GET /api/products/trending
+// @access  Public
+const getTrendingProducts = async (req, res) => {
+    try {
+        const limit = Number(req.query.limit) || 8;
+
+        // Get all distinct subcategories that have in-stock products
+        const categories = await Product.distinct('subcategory', { in_stock: true });
+
+        const cleanCats = categories.filter(c => c && c.trim() !== '');
+
+        // Pick 1 random in-stock product from each category
+        const picks = await Promise.all(
+            cleanCats.map(cat =>
+                Product.aggregate([
+                    { $match: { subcategory: cat, in_stock: true } },
+                    { $sample: { size: 1 } },
+                ])
+            )
+        );
+
+        // Flatten, strip cache urls, shuffle, and cap at `limit`
+        const fixImg = (img) => img.replace(/\/cache\/[a-zA-Z0-9]+\//, '/');
+
+        const all = picks
+            .flat()
+            .map(p => ({
+                ...p,
+                images: (p.images || []).map(fixImg),
+            }))
+            .sort(() => Math.random() - 0.5)
+            .slice(0, limit);
+
+        res.json(all);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
 module.exports = {
     getProducts,
     getProductById,
     getCategories,
+    getTrendingProducts,
 };
