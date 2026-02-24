@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
 import Image from 'next/image';
 
-export default function InfiniteProductsGrid() {
+export default function InfiniteProductsGrid({ category = '' }) {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,19 +14,20 @@ export default function InfiniteProductsGrid() {
     const { addToCart } = useCart();
 
     const observer = useRef();
-    const limit = 12; // Fetch 12 items at a time
+    const limit = 12;
 
-    const fetchProducts = useCallback(async (pageNum) => {
+    const fetchProducts = useCallback(async (pageNum, cat) => {
         try {
             setLoading(true);
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products?page=${pageNum}&limit=${limit}`);
+            const catParam = cat ? `&subcategory=${encodeURIComponent(cat)}` : '';
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products?page=${pageNum}&limit=${limit}${catParam}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
 
             setProducts(prev => {
-                // Avoid appending duplicates by checking IDs
+                if (pageNum === 1) return data.products;
                 const existingIds = new Set(prev.map(p => p._id));
                 const newProducts = data.products.filter(p => !existingIds.has(p._id));
                 return [...prev, ...newProducts];
@@ -34,6 +35,8 @@ export default function InfiniteProductsGrid() {
 
             if (data.page >= data.pages) {
                 setHasMore(false);
+            } else {
+                setHasMore(true);
             }
         } catch (err) {
             console.error("Could not fetch products:", err);
@@ -41,14 +44,17 @@ export default function InfiniteProductsGrid() {
         } finally {
             setLoading(false);
         }
-    }, [limit]);
+    }, []);
 
-    // Initial load
+    // Reset and refetch whenever category changes
     useEffect(() => {
-        fetchProducts(1);
-    }, [fetchProducts]);
+        setProducts([]);
+        setPage(1);
+        setHasMore(true);
+        setError(null);
+        fetchProducts(1, category);
+    }, [category, fetchProducts]);
 
-    // Intersection Observer attached to the last element sentinel
     const lastProductElementRef = useCallback(node => {
         if (loading) return;
         if (observer.current) observer.current.disconnect();
@@ -57,14 +63,14 @@ export default function InfiniteProductsGrid() {
             if (entries[0].isIntersecting && hasMore) {
                 setPage(prevPage => {
                     const nextPage = prevPage + 1;
-                    fetchProducts(nextPage);
+                    fetchProducts(nextPage, category);
                     return nextPage;
                 });
             }
         });
 
         if (node) observer.current.observe(node);
-    }, [loading, hasMore, fetchProducts]);
+    }, [loading, hasMore, fetchProducts, category]);
 
     const formatPrice = (priceStr) => {
         return priceStr || 'TBA';
@@ -80,7 +86,9 @@ export default function InfiniteProductsGrid() {
             )}
 
             {!loading && !error && products.length === 0 && (
-                <p style={{ textAlign: 'center', gridColumn: '1 / -1' }}>No products found in the collection.</p>
+                <div style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+                    <p style={{ fontSize: '1.1rem', color: 'var(--clr-text-muted)' }}>No products found in this category.</p>
+                </div>
             )}
 
             <div className="product-grid loaded">
@@ -91,7 +99,6 @@ export default function InfiniteProductsGrid() {
 
                     const cleanTitle = (title) => title ? title.replace(/^(?:Buy|Purchase|Order)\s+/i, '').replace(/\s*(?:-|\|)?\s*(?:Online at best price in pakistan|naheed\.pk)\s*/ig, '').trim() : '';
 
-                    // Attach the ref to the very last product card rendered
                     const isLastElement = products.length === index + 1;
 
                     return (
@@ -153,7 +160,7 @@ export default function InfiniteProductsGrid() {
 
             {!hasMore && products.length > 0 && (
                 <p style={{ textAlign: 'center', margin: '4rem 0', color: 'var(--clr-text-muted)' }}>
-                    You've seen all the products.
+                    You&apos;ve seen all the products.
                 </p>
             )}
         </section>

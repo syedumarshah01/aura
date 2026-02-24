@@ -54,88 +54,175 @@ const createOrder = async (req, res) => {
 // Builds and sends the branded HTML order confirmation email
 async function sendOrderConfirmationEmail(order) {
     const transporter = createTransporter();
+    const storeUrl = process.env.STORE_URL || 'http://localhost:3001';
+
+    const { firstName, lastName, address, city, postalCode, phone } = order.shippingAddress;
+    const orderDate = new Date(order.createdAt).toLocaleDateString('en-PK', {
+        day: 'numeric', month: 'long', year: 'numeric'
+    });
 
     const itemsHtml = order.orderItems.map(item => {
         const title = cleanTitle(item.title).split(' - ')[0] || cleanTitle(item.title);
+        const imageHtml = item.image
+            ? `<img src="${item.image}" alt="${title}" width="52" height="52" style="object-fit:contain;border-radius:6px;background:#f5f0ed;display:block;" />`
+            : `<div style="width:52px;height:52px;background:#f5f0ed;border-radius:6px;"></div>`;
         return `
             <tr>
-                <td style="padding: 12px 0; border-bottom: 1px solid #E8E1DC; color: #2D2825; font-size: 0.9rem;">${title}</td>
-                <td style="padding: 12px 0; border-bottom: 1px solid #E8E1DC; text-align: center; color: #7A726D; font-size: 0.9rem;">×${item.quantity}</td>
-                <td style="padding: 12px 0; border-bottom: 1px solid #E8E1DC; text-align: right; color: #2D2825; font-weight: 500; font-size: 0.9rem;">${item.price || '—'}</td>
+                <td style="padding:14px 0;border-bottom:1px solid #ede8e3;vertical-align:middle;width:64px;">
+                    ${imageHtml}
+                </td>
+                <td style="padding:14px 12px;border-bottom:1px solid #ede8e3;vertical-align:middle;color:#2d2825;font-size:14px;line-height:1.4;">
+                    ${title}
+                    <div style="color:#9e948f;font-size:12px;margin-top:2px;">Qty: ${item.quantity}</div>
+                </td>
+                <td style="padding:14px 0;border-bottom:1px solid #ede8e3;vertical-align:middle;text-align:right;color:#2d2825;font-weight:600;font-size:14px;white-space:nowrap;">
+                    ${item.price || '—'}
+                </td>
             </tr>
         `;
     }).join('');
 
-    const { firstName, lastName, address, city, postalCode } = order.shippingAddress;
-    const orderDate = new Date(order.createdAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'long', year: 'numeric' });
+    const emailHtml = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Order Confirmed — Aura</title>
+    </head>
+    <body style="margin:0;padding:0;background:#f0ebe6;font-family:'Helvetica Neue',Arial,sans-serif;">
+
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0ebe6;padding:40px 16px;">
+            <tr><td align="center">
+                <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;">
+
+                    <!-- ▸ Header -->
+                    <tr>
+                        <td style="background:#2d2825;padding:40px 40px 32px;border-radius:16px 16px 0 0;text-align:center;">
+                            <div style="font-family:Georgia,serif;font-style:italic;font-size:36px;color:#c9a99d;letter-spacing:-0.5px;margin-bottom:20px;">Aura.</div>
+                            <div style="display:inline-block;background:#3d3530;border:1px solid #4a3f3a;border-radius:30px;padding:8px 20px;">
+                                <span style="font-size:13px;color:#c9a99d;letter-spacing:0.08em;text-transform:uppercase;">Order Confirmed</span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- ▸ Green tick banner -->
+                    <tr>
+                        <td style="background:#fff;padding:36px 40px 28px;text-align:center;border-left:1px solid #ede8e3;border-right:1px solid #ede8e3;">
+                            <div style="width:64px;height:64px;border-radius:50%;background:#eaf5ec;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;">
+                                <!-- checkmark -->
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <h1 style="font-family:Georgia,serif;font-size:26px;color:#2d2825;margin:0 0 10px;">Thank you, ${firstName}!</h1>
+                            <p style="color:#7a726d;font-size:15px;line-height:1.7;margin:0;max-width:400px;margin:0 auto;">
+                                Your order has been confirmed and is being carefully prepared. We'll send you a shipping update shortly.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- ▸ Order meta cards -->
+                    <tr>
+                        <td style="background:#fff;padding:0 40px 28px;border-left:1px solid #ede8e3;border-right:1px solid #ede8e3;">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td width="50%" style="padding-right:8px;">
+                                        <div style="background:#faf7f5;border:1px solid #ede8e3;border-radius:10px;padding:16px 20px;">
+                                            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#9e948f;margin-bottom:6px;">Order Number</div>
+                                            <div style="font-size:15px;font-weight:700;color:#a8867a;">${order.orderNumber}</div>
+                                        </div>
+                                    </td>
+                                    <td width="50%" style="padding-left:8px;">
+                                        <div style="background:#faf7f5;border:1px solid #ede8e3;border-radius:10px;padding:16px 20px;">
+                                            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#9e948f;margin-bottom:6px;">Order Date</div>
+                                            <div style="font-size:15px;font-weight:500;color:#2d2825;">${orderDate}</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- ▸ Divider -->
+                    <tr>
+                        <td style="background:#fff;padding:0 40px;border-left:1px solid #ede8e3;border-right:1px solid #ede8e3;">
+                            <hr style="border:none;border-top:1px solid #ede8e3;margin:0 0 24px;" />
+                        </td>
+                    </tr>
+
+                    <!-- ▸ Items -->
+                    <tr>
+                        <td style="background:#fff;padding:0 40px 28px;border-left:1px solid #ede8e3;border-right:1px solid #ede8e3;">
+                            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#9e948f;margin-bottom:16px;">Items Ordered</div>
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                ${itemsHtml}
+                                <tr>
+                                    <td colspan="2" style="padding:20px 0 0;font-size:15px;font-weight:600;color:#2d2825;">Total</td>
+                                    <td style="padding:20px 0 0;text-align:right;font-size:18px;font-weight:700;color:#a8867a;">PKR ${Number(order.totalAmount).toLocaleString()}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="padding:6px 0 0;text-align:right;">
+                                        <span style="font-size:12px;color:#2e7d32;background:#eaf5ec;padding:3px 10px;border-radius:20px;">✓ Free Shipping</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- ▸ Shipping address -->
+                    <tr>
+                        <td style="background:#fff;padding:0 40px 32px;border-left:1px solid #ede8e3;border-right:1px solid #ede8e3;">
+                            <div style="background:#faf7f5;border:1px solid #ede8e3;border-radius:10px;padding:20px 24px;">
+                                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#9e948f;margin-bottom:10px;">Shipping To</div>
+                                <div style="font-size:14px;color:#2d2825;line-height:1.7;">
+                                    <strong>${firstName} ${lastName}</strong><br/>
+                                    ${address}<br/>
+                                    ${city}${postalCode ? ', ' + postalCode : ''}<br/>
+                                    ${phone ? `<span style="color:#7a726d;">${phone}</span>` : ''}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- ▸ CTA -->
+                    <tr>
+                        <td style="background:#fff;padding:0 40px 40px;text-align:center;border-left:1px solid #ede8e3;border-right:1px solid #ede8e3;">
+                            <a href="${storeUrl}/track" style="display:inline-block;background:#2d2825;color:#fff;text-decoration:none;padding:15px 40px;border-radius:30px;font-size:14px;font-weight:600;letter-spacing:0.04em;">
+                                Track Your Order →
+                            </a>
+                            <p style="margin:20px 0 0;font-size:13px;color:#9e948f;line-height:1.6;">
+                                Need to return something?
+                                <a href="${storeUrl}/returns" style="color:#a8867a;text-decoration:none;">Visit our Returns page</a>.<br/>
+                                Questions? <a href="${storeUrl}/contact" style="color:#a8867a;text-decoration:none;">Contact us</a> — we're happy to help.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- ▸ Footer -->
+                    <tr>
+                        <td style="background:#2d2825;padding:24px 40px;border-radius:0 0 16px 16px;text-align:center;">
+                            <p style="margin:0 0 8px;font-family:Georgia,serif;font-style:italic;font-size:18px;color:#c9a99d;">Aura.</p>
+                            <p style="margin:0;font-size:12px;color:#7a726d;line-height:1.6;">
+                                © ${new Date().getFullYear()} Aura Beauty. Karachi, Pakistan.<br/>
+                                You're receiving this because you placed an order with us.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td></tr>
+        </table>
+
+    </body>
+    </html>
+    `;
 
     await transporter.sendMail({
         from: `"Aura Beauty" <${process.env.GMAIL_USER}>`,
         to: order.email,
         subject: `Order Confirmed — ${order.orderNumber} | Aura`,
-        html: `
-            <div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #FCFAf8; border: 1px solid #E8E1DC; border-radius: 12px; overflow: hidden;">
-
-                <!-- Header -->
-                <div style="background: #2D2825; padding: 32px; text-align: center;">
-                    <h1 style="color: #C9A99D; font-family: Georgia, serif; font-style: italic; font-size: 2rem; margin: 0;">Aura.</h1>
-                </div>
-
-                <!-- Body -->
-                <div style="padding: 36px;">
-                    <h2 style="color: #2D2825; font-family: Georgia, serif; font-size: 1.6rem; margin-bottom: 0.5rem;">Your order is confirmed ✓</h2>
-                    <p style="color: #7A726D; line-height: 1.7; margin-bottom: 2rem;">
-                        Hi ${firstName}, thank you for shopping with Aura. We&rsquo;re carefully preparing your order and will notify you once it ships.
-                    </p>
-
-                    <!-- Order Meta -->
-                    <div style="display: flex; gap: 24px; margin-bottom: 2rem;">
-                        <div style="flex: 1; background: #fff; border: 1px solid #E8E1DC; border-radius: 8px; padding: 16px;">
-                            <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #7A726D; margin: 0 0 4px;">Order Number</p>
-                            <p style="font-weight: 700; color: #A8867A; margin: 0;">${order.orderNumber}</p>
-                        </div>
-                        <div style="flex: 1; background: #fff; border: 1px solid #E8E1DC; border-radius: 8px; padding: 16px;">
-                            <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #7A726D; margin: 0 0 4px;">Order Date</p>
-                            <p style="font-weight: 500; color: #2D2825; margin: 0;">${orderDate}</p>
-                        </div>
-                    </div>
-
-                    <!-- Items -->
-                    <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: #7A726D; border-bottom: 1px solid #E8E1DC; padding-bottom: 8px; margin-bottom: 0;">Items Ordered</h3>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;">
-                        ${itemsHtml}
-                        <tr>
-                            <td colspan="2" style="padding: 16px 0 0; font-weight: 600; color: #2D2825;">Total</td>
-                            <td style="padding: 16px 0 0; text-align: right; font-weight: 700; font-size: 1.1rem; color: #A8867A;">PKR ${Number(order.totalAmount).toLocaleString()}</td>
-                        </tr>
-                    </table>
-
-                    <!-- Shipping -->
-                    <div style="background: #fff; border: 1px solid #E8E1DC; border-radius: 8px; padding: 20px; margin-bottom: 2rem;">
-                        <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #7A726D; margin: 0 0 8px;">Shipping To</p>
-                        <p style="color: #2D2825; line-height: 1.7; margin: 0; font-size: 0.9rem;">
-                            ${firstName} ${lastName}<br/>
-                            ${address}, ${city}${postalCode ? ' ' + postalCode : ''}
-                        </p>
-                    </div>
-
-                    <!-- Track -->
-                    <div style="text-align: center; margin-bottom: 2rem;">
-                        <a href="http://localhost:3000/track" style="display: inline-block; background: #2D2825; color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 30px; font-size: 0.9rem; font-weight: 600;">Track Your Order</a>
-                    </div>
-
-                    <p style="color: #7A726D; font-size: 0.85rem; line-height: 1.6; text-align: center;">
-                        Need to return something? Visit our <a href="http://localhost:3000/returns" style="color: #A8867A;">Returns page</a>.<br/>
-                        Questions? <a href="http://localhost:3000/contact" style="color: #A8867A;">Contact us</a> — we&rsquo;re happy to help.
-                    </p>
-                </div>
-
-                <!-- Footer -->
-                <div style="background: #F5F0ED; padding: 20px; text-align: center; border-top: 1px solid #E8E1DC;">
-                    <p style="color: #7A726D; font-size: 0.75rem; margin: 0;">© 2026 Aura Beauty. Karachi, Pakistan.</p>
-                </div>
-            </div>
-        `
+        html: emailHtml,
     });
 }
 

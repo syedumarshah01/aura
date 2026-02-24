@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import InteractiveClientWrapper from '../../components/InteractiveClientWrapper';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Suspense } from 'react';
 
 const STATUS_STEPS = ['processing', 'shipped', 'delivered'];
 
@@ -44,7 +46,8 @@ function StatusTimeline({ currentStatus }) {
     );
 }
 
-export default function TrackOrderPage() {
+function TrackOrderInner() {
+    const searchParams = useSearchParams();
     const [orderNumber, setOrderNumber] = useState('');
     const [email, setEmail] = useState('');
     const [order, setOrder] = useState(null);
@@ -54,30 +57,60 @@ export default function TrackOrderPage() {
     const cleanTitle = (title) =>
         title ? title.replace(/^(?:Buy|Purchase|Order)\s+/i, '').replace(/\s*(?:-|\|)?\s*(?:Online at best price in pakistan|naheed\.pk)\s*/gi, '').trim() : '';
 
-    const handleTrack = async (e) => {
-        e.preventDefault();
+    const fetchOrder = async (overrideNum) => {
+        // Use override (from URL param) or read the current input value
+        const query = (overrideNum || orderNumber).trim().toUpperCase();
+        if (!query) {
+            setError('Please enter an order number.');
+            return;
+        }
         setLoading(true);
         setError(null);
         setOrder(null);
-
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/orders/track/${orderNumber.trim().toUpperCase()}`);
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const url = `${apiBase}/orders/track/${encodeURIComponent(query)}`;
+            console.log('Fetching order from:', url); // Debugging
+            const res = await fetch(url);
             const data = await res.json();
-
-            if (!res.ok) throw new Error(data.message || 'Order not found.');
-
-            // Optional: Verify email matches if provided
+            console.log('API response:', data); // Debugging
+            if (!res.ok) throw new Error(data.message || 'No order found with that number.');
             if (email && data.email && data.email.toLowerCase() !== email.toLowerCase()) {
                 throw new Error('The email address does not match this order.');
             }
-
             setOrder(data);
         } catch (err) {
-            setError(err.message);
+            console.error('Fetch order error:', err); // Debugging
+            setError(err.message || 'Could not find your order. Please check the number and try again.');
         } finally {
             setLoading(false);
         }
     };
+
+    // Auto-fill and auto-fetch if ?order= param is present
+    useEffect(() => {
+        const param = searchParams.get('order');
+        if (param) {
+            const upper = param.trim().toUpperCase();
+            setOrderNumber(upper);
+            fetchOrder(upper);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const handleTrack = (e) => {
+        e.preventDefault();
+        fetchOrder(orderNumber); // pass current value explicitly to avoid stale closure
+    };
+
+    // Scroll result into view when order is fetched
+    useEffect(() => {
+        if (order) {
+            setTimeout(() => {
+                document.getElementById('order-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }, [order]);
 
     const inputStyle = {
         width: '100%', padding: '1rem 1.2rem',
@@ -149,7 +182,14 @@ export default function TrackOrderPage() {
 
                 {/* Order Result */}
                 {order && (
-                    <div className="fade-in-up" style={{ maxWidth: '680px', margin: '0 auto', padding: '0 2rem' }}>
+                    <div
+                        id="order-result"
+                        style={{
+                            maxWidth: '680px', margin: '0 auto', padding: '0 2rem',
+                            animation: 'fadeInUp 0.5s ease both',
+                        }}
+                    >
+                        <style>{`@keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }`}</style>
                         <div style={{ backgroundColor: 'var(--clr-surface)', borderRadius: '20px', padding: '2.5rem', border: '1px solid var(--clr-border)', boxShadow: '0 10px 40px rgba(0,0,0,0.04)' }}>
 
                             {/* Order Header */}
@@ -228,5 +268,13 @@ export default function TrackOrderPage() {
                 </div>
             </main>
         </InteractiveClientWrapper>
+    );
+}
+
+export default function TrackOrderPage() {
+    return (
+        <Suspense fallback={null}>
+            <TrackOrderInner />
+        </Suspense>
     );
 }

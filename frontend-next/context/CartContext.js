@@ -7,6 +7,7 @@ const CartContext = createContext();
 export function CartProvider({ children }) {
     const [cartItems, setCartItems] = useState([]);
     const [toastMessage, setToastMessage] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     // Load from local storage on mount
     useEffect(() => {
@@ -18,12 +19,14 @@ export function CartProvider({ children }) {
                 console.error("Could not parse cart from local storage.");
             }
         }
+        setIsLoaded(true);
     }, []);
 
-    // Save to local storage on cart change
+    // Save to local storage only after the initial load is complete
     useEffect(() => {
+        if (!isLoaded) return;
         localStorage.setItem('aura_cart', JSON.stringify(cartItems));
-    }, [cartItems]);
+    }, [cartItems, isLoaded]);
 
     const addToCart = (product, quantity = 1) => {
         setCartItems(prev => {
@@ -77,12 +80,15 @@ export function CartProvider({ children }) {
 
     const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
+    const clearCart = () => setCartItems([]);
+
     return (
         <CartContext.Provider value={{
             cartItems,
             addToCart,
             removeFromCart,
             updateQuantity,
+            clearCart,
             cartCount,
             cartTotal,
             toastMessage

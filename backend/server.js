@@ -3,6 +3,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const productRoutes = require('./routes/productRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const returnsRoutes = require('./routes/returnsRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 // Load env vars
 dotenv.config();
@@ -18,6 +21,19 @@ app.use(express.json());
 
 // Routes
 app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/returns', returnsRoutes);
+app.use('/api/contact', contactRoutes);
+
+// Admin login endpoint
+app.post('/api/admin/login', (req, res) => {
+    const { password } = req.body;
+    if (password === process.env.ADMIN_PASSWORD) {
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ success: false, message: 'Invalid password.' });
+    }
+});
 
 // Root route
 app.get('/', (req, res) => {

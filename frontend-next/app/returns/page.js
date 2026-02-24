@@ -16,6 +16,7 @@ export default function ReturnsPage() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [refNumber, setRefNumber] = useState('');
     const [error, setError] = useState(null);
 
     const handleChange = (e) => {
@@ -35,6 +36,7 @@ export default function ReturnsPage() {
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || 'Submission failed.');
+            setRefNumber(data.refNumber || '');
             setIsSuccess(true);
         } catch (err) {
             setError(err.message);
@@ -77,17 +79,83 @@ export default function ReturnsPage() {
 
                 <div style={{ maxWidth: '780px', margin: '0 auto', padding: '0 2rem' }}>
                     {isSuccess ? (
-                        <div className="fade-in-up" style={{ textAlign: 'center', backgroundColor: 'var(--clr-surface)', padding: '4rem 3rem', borderRadius: '20px', border: '1px solid var(--clr-border)' }}>
-                            <div style={{ width: '72px', height: '72px', borderRadius: '50%', backgroundColor: 'var(--clr-accent)', color: 'var(--clr-primary-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                        <div style={{
+                            textAlign: 'center',
+                            backgroundColor: 'var(--clr-surface)',
+                            padding: '4rem 3rem',
+                            borderRadius: '20px',
+                            border: '1px solid var(--clr-border)',
+                            animation: 'successFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both',
+                        }}>
+                            <style>{`
+                                @keyframes successFadeUp {
+                                    from { opacity: 0; transform: translateY(24px); }
+                                    to   { opacity: 1; transform: none; }
+                                }
+                                @keyframes popIn {
+                                    0%   { transform: scale(0.4); opacity: 0; }
+                                    70%  { transform: scale(1.1); }
+                                    100% { transform: scale(1); opacity: 1; }
+                                }
+                            `}</style>
+
+                            {/* Animated check */}
+                            <div style={{
+                                width: '80px', height: '80px', borderRadius: '50%',
+                                background: 'linear-gradient(135deg, #2d2825 0%, #5a4540 100%)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                margin: '0 auto 1.75rem',
+                                boxShadow: '0 12px 32px rgba(45,40,37,0.22)',
+                                animation: 'popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both',
+                            }}>
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#c9a99d" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
                             </div>
-                            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '0.75rem' }}>Request Submitted!</h2>
-                            <p style={{ color: 'var(--clr-text-muted)', lineHeight: 1.7, maxWidth: '400px', margin: '0 auto 2rem' }}>
-                                We&apos;ve received your return request for order <strong style={{ color: 'var(--clr-primary-dark)' }}>{formData.orderNumber}</strong>. Check your email for a confirmation. We&apos;ll be in touch within 2 business days.
+
+                            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '0.5rem' }}>
+                                Request Submitted!
+                            </h2>
+
+                            <p style={{ color: 'var(--clr-text-muted)', lineHeight: 1.7, maxWidth: '420px', margin: '0 auto 1.5rem', fontSize: '0.95rem' }}>
+                                We've received your return request for order{' '}
+                                <strong style={{ color: 'var(--clr-primary-dark)' }}>{formData.orderNumber}</strong>.
+                                A confirmation has been sent to your email.
                             </p>
-                            <Link href="/track" className="primary-btn" style={{ textDecoration: 'none', display: 'inline-block', marginRight: '1rem' }}>Track Order</Link>
-                            <Link href="/collections" className="outline-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>Continue Shopping</Link>
+
+                            {/* Ref number pill */}
+                            {refNumber && (
+                                <div style={{
+                                    display: 'inline-block',
+                                    padding: '0.6rem 1.6rem',
+                                    borderRadius: '999px',
+                                    border: '1.5px solid var(--clr-border)',
+                                    marginBottom: '2rem',
+                                }}>
+                                    <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--clr-text-muted)' }}>Reference&nbsp;</span>
+                                    <strong style={{ color: 'var(--clr-primary-dark)', fontSize: '0.95rem' }}>{refNumber}</strong>
+                                </div>
+                            )}
+
+                            <div style={{
+                                backgroundColor: 'var(--clr-bg)',
+                                borderRadius: '12px',
+                                padding: '1rem 1.5rem',
+                                maxWidth: '380px',
+                                margin: '0 auto 2rem',
+                                fontSize: '0.85rem',
+                                color: 'var(--clr-text-muted)',
+                                lineHeight: 1.6,
+                            }}>
+                                ⏱ Our team will review your request and respond within <strong style={{ color: 'var(--clr-text-main)' }}>2 business days</strong> with next steps and a return label.
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                                <Link href="/track" className="primary-btn" style={{ textDecoration: 'none' }}>Track My Order</Link>
+                                <Link href="/collections" className="outline-btn" style={{ textDecoration: 'none' }}>Continue Shopping</Link>
+                            </div>
                         </div>
+
                     ) : (
                         <form onSubmit={handleSubmit} style={{ backgroundColor: 'var(--clr-surface)', borderRadius: '20px', padding: '3rem', border: '1px solid var(--clr-border)', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
