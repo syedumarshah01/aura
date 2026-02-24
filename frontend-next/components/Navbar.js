@@ -3,16 +3,18 @@
 import { useCart } from '../context/CartContext';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import SearchOverlay from './SearchOverlay';
 
 export default function Navbar() {
     const { cartCount } = useCart();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-    // Prevent body scroll when mobile menu is open
+    // Prevent body scroll when mobile menu or search is open
     useEffect(() => {
-        document.body.style.overflow = menuOpen ? 'hidden' : '';
+        document.body.style.overflow = (menuOpen || isSearchOpen) ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
-    }, [menuOpen]);
+    }, [menuOpen, isSearchOpen]);
 
     const closeMenu = () => setMenuOpen(false);
 
@@ -30,7 +32,11 @@ export default function Navbar() {
                 </div>
 
                 <div className="nav-icons">
-                    <button className="icon-btn" aria-label="Search">
+                    <button
+                        className="icon-btn"
+                        aria-label="Search"
+                        onClick={() => setIsSearchOpen(true)}
+                    >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </button>
 
@@ -74,6 +80,12 @@ export default function Navbar() {
                 <Link href="/returns" onClick={closeMenu} style={{ fontSize: '1rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Returns</Link>
                 <Link href="/contact" onClick={closeMenu} style={{ fontSize: '1rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Contact</Link>
             </div>
+
+            {/* Search Overlay */}
+            <SearchOverlay
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+            />
         </nav>
     );
 }

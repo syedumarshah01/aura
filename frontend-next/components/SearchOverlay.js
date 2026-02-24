@@ -7,7 +7,7 @@ const cleanTitle = (title) =>
     title
         ? title
             .replace(/^(?:Buy|Purchase|Order)\s+/i, '')
-            .replace(/\s*(?:-|\|)?\s*(?:Online at best price in pakistan|naheed\.pk)\s*/gi, '')
+            .replace(/\s*(?:-|\|)?\s*(?:Online at best price in pakistan|naheed\.pk|Online at Special Price in Pakistan)\s*/gi, '')
             .trim()
         : '';
 
@@ -17,7 +17,6 @@ export default function SearchOverlay({ isOpen, onClose }) {
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const inputRef = useRef(null);
-    const debounceRef = useRef(null);
 
     // Auto-focus the input when overlay opens
     useEffect(() => {
@@ -38,7 +37,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
         return () => window.removeEventListener('keydown', handleKey);
     }, [onClose]);
 
-    // Debounced search — waits 350ms after last keystroke
+    // Debounced search logic
     const fetchResults = useCallback(async (searchQuery) => {
         if (!searchQuery.trim()) {
             setResults([]);
@@ -49,7 +48,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
         setHasSearched(true);
         try {
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products?keyword=${encodeURIComponent(searchQuery)}&limit=6`
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products?keyword=${encodeURIComponent(searchQuery)}&limit=8`
             );
             const data = await res.json();
             // Clean up image URLs
@@ -65,11 +64,30 @@ export default function SearchOverlay({ isOpen, onClose }) {
         }
     }, []);
 
+    // Effect for debouncing
+    useEffect(() => {
+        if (!query.trim()) {
+            setResults([]);
+            setHasSearched(false);
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            fetchResults(query);
+        }, 500); // 500ms delay
+
+        return () => clearTimeout(timer);
+    }, [query, fetchResults]);
+
     const handleChange = (e) => {
-        const val = e.target.value;
-        setQuery(val);
-        clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(() => fetchResults(val), 350);
+        setQuery(e.target.value);
+    };
+
+    const handleClear = () => {
+        setQuery('');
+        setResults([]);
+        setHasSearched(false);
+        inputRef.current?.focus();
     };
 
     const handleResultClick = () => {
@@ -86,11 +104,11 @@ export default function SearchOverlay({ isOpen, onClose }) {
                 style={{
                     position: 'fixed',
                     inset: 0,
-                    backgroundColor: 'rgba(45, 40, 37, 0.55)',
-                    backdropFilter: 'blur(6px)',
-                    WebkitBackdropFilter: 'blur(6px)',
+                    backgroundColor: 'rgba(25, 23, 21, 0.4)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
                     zIndex: 200,
-                    animation: 'fadeIn 0.2s ease',
+                    animation: 'fadeIn 0.25s ease-out',
                 }}
             />
 
@@ -102,19 +120,21 @@ export default function SearchOverlay({ isOpen, onClose }) {
                     left: 0,
                     right: 0,
                     zIndex: 201,
-                    backgroundColor: 'rgba(252, 250, 248, 0.97)',
+                    backgroundColor: 'rgba(252, 251, 250, 0.98)',
                     backdropFilter: 'blur(20px)',
                     WebkitBackdropFilter: 'blur(20px)',
-                    padding: '2rem',
-                    boxShadow: '0 8px 40px rgba(0,0,0,0.12)',
-                    animation: 'slideDown 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+                    padding: '2.5rem 1.5rem',
+                    boxShadow: '0 10px 50px rgba(0,0,0,0.1)',
+                    animation: 'slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                    maxHeight: '90vh',
+                    overflowY: 'auto',
                 }}
             >
                 {/* Search Input Row */}
-                <div style={{ maxWidth: '720px', margin: '0 auto' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '2px solid var(--clr-text-main)', paddingBottom: '0.75rem' }}>
+                <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid var(--clr-border)', paddingBottom: '1rem' }}>
                         {/* Search icon */}
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--clr-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--clr-text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.6 }}>
                             <circle cx="11" cy="11" r="8" />
                             <line x1="21" y1="21" x2="16.65" y2="16.65" />
                         </svg>
@@ -124,7 +144,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
                             type="text"
                             value={query}
                             onChange={handleChange}
-                            placeholder="Search products..."
+                            placeholder="Type to search our collection..."
                             autoComplete="off"
                             style={{
                                 flex: 1,
@@ -132,24 +152,40 @@ export default function SearchOverlay({ isOpen, onClose }) {
                                 background: 'transparent',
                                 outline: 'none',
                                 fontFamily: 'var(--font-sans)',
-                                fontSize: '1.4rem',
+                                fontSize: '1.5rem',
                                 color: 'var(--clr-text-main)',
-                                fontWeight: 400,
+                                fontWeight: 300,
+                                letterSpacing: '-0.01em',
                             }}
                         />
 
                         {/* Loading spinner */}
                         {loading && (
-                            <div style={{ width: '18px', height: '18px', border: '2px solid var(--clr-border)', borderTopColor: 'var(--clr-primary-dark)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />
+                            <div style={{ width: '20px', height: '20px', border: '2px solid rgba(0,0,0,0.05)', borderTopColor: 'var(--clr-primary-dark)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />
+                        )}
+
+                        {/* Clear button */}
+                        {query && !loading && (
+                            <button
+                                onClick={handleClear}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--clr-text-muted)', display: 'flex', padding: '0.25rem', opacity: 0.5, transition: 'opacity 0.2s' }}
+                                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                                onMouseLeave={(e) => e.currentTarget.style.opacity = '0.5'}
+                            >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                            </button>
                         )}
 
                         {/* Close button */}
                         <button
                             onClick={onClose}
                             aria-label="Close search"
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--clr-text-muted)', display: 'flex', padding: '0.25rem', transition: 'color 0.2s ease' }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--clr-text-muted)', display: 'flex', padding: '0.25rem', marginLeft: '0.5rem' }}
                         >
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18" />
                                 <line x1="6" y1="6" x2="18" y2="18" />
                             </svg>
@@ -158,25 +194,26 @@ export default function SearchOverlay({ isOpen, onClose }) {
 
                     {/* Results */}
                     {hasSearched && !loading && (
-                        <div style={{ marginTop: '1.5rem' }}>
+                        <div style={{ marginTop: '2rem' }}>
                             {results.length === 0 ? (
-                                <div style={{ textAlign: 'center', padding: '2.5rem 0', color: 'var(--clr-text-muted)' }}>
-                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: '0 auto 1rem', display: 'block', opacity: 0.4 }}>
-                                        <circle cx="11" cy="11" r="8" />
-                                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                    </svg>
-                                    <p style={{ fontSize: '1rem' }}>No products found for <strong>&ldquo;{query}&rdquo;</strong></p>
-                                    <p style={{ fontSize: '0.85rem', marginTop: '0.5rem', opacity: 0.6 }}>Try a different keyword.</p>
+                                <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--clr-text-muted)' }}>
+                                    <p style={{ fontSize: '1.1rem', fontWeight: 400 }}>No results found for &ldquo;{query}&rdquo;</p>
+                                    <p style={{ fontSize: '0.9rem', marginTop: '0.5rem', opacity: 0.6 }}>Try searching for another product or category.</p>
                                 </div>
                             ) : (
                                 <>
-                                    <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--clr-text-muted)', marginBottom: '1rem' }}>
-                                        {results.length} result{results.length !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;
-                                    </p>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                        <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--clr-text-muted)', fontWeight: 600 }}>
+                                            Results ({results.length})
+                                        </p>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.25rem' }}>
                                         {results.map((product) => {
                                             const img = product.images?.[0] || 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop';
                                             const title = cleanTitle(product.title);
+                                            const brand = title.split(' ')[0];
+                                            const displayTitle = title.split(' - ')[0] || title;
+
                                             return (
                                                 <a
                                                     key={product._id}
@@ -185,45 +222,51 @@ export default function SearchOverlay({ isOpen, onClose }) {
                                                     style={{
                                                         display: 'flex',
                                                         alignItems: 'center',
-                                                        gap: '1rem',
-                                                        padding: '0.75rem',
-                                                        borderRadius: '8px',
+                                                        gap: '1.25rem',
+                                                        padding: '1rem',
+                                                        borderRadius: '12px',
                                                         textDecoration: 'none',
                                                         color: 'inherit',
-                                                        backgroundColor: 'var(--clr-bg)',
+                                                        backgroundColor: '#fff',
                                                         border: '1px solid var(--clr-border)',
-                                                        transition: 'all 0.25s ease',
+                                                        transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                                                     }}
                                                     onMouseEnter={(e) => {
-                                                        e.currentTarget.style.borderColor = 'var(--clr-primary)';
-                                                        e.currentTarget.style.backgroundColor = 'var(--clr-surface)';
-                                                        e.currentTarget.style.transform = 'translateY(-2px)';
-                                                        e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)';
+                                                        e.currentTarget.style.borderColor = 'var(--clr-primary-dark)';
+                                                        e.currentTarget.style.transform = 'translateY(-3px)';
+                                                        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.06)';
                                                     }}
                                                     onMouseLeave={(e) => {
                                                         e.currentTarget.style.borderColor = 'var(--clr-border)';
-                                                        e.currentTarget.style.backgroundColor = 'var(--clr-bg)';
                                                         e.currentTarget.style.transform = 'none';
                                                         e.currentTarget.style.boxShadow = 'none';
                                                     }}
                                                 >
-                                                    <div style={{ position: 'relative', width: '52px', height: '52px', flexShrink: 0, backgroundColor: 'var(--clr-surface)', borderRadius: '6px', overflow: 'hidden' }}>
-                                                        <Image src={img} alt={title} fill style={{ objectFit: 'contain', padding: '4px' }} sizes="52px" />
+                                                    <div style={{ position: 'relative', width: '70px', height: '70px', flexShrink: 0, backgroundColor: 'var(--clr-surface)', borderRadius: '8px', overflow: 'hidden' }}>
+                                                        <Image src={img} alt={title} fill style={{ objectFit: 'contain', padding: '6px' }} sizes="70px" />
                                                     </div>
                                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                                        <p style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--clr-text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                            {title.split(' - ')[0] || title}
+                                                        <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--clr-text-muted)', marginBottom: '0.2rem' }}>
+                                                            {product.subcategory || brand}
                                                         </p>
-                                                        <p style={{ fontSize: '0.8rem', color: 'var(--clr-primary-dark)', marginTop: '0.2rem', fontWeight: 500 }}>
-                                                            {product.price || 'TBA'}
+                                                        <p style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--clr-text-main)', marginBottom: '0.25rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                            {displayTitle}
                                                         </p>
-                                                        {!product.in_stock && (
-                                                            <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#999' }}>Out of stock</span>
-                                                        )}
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                            <span style={{ fontSize: '0.9rem', color: 'var(--clr-text-main)', fontWeight: 600 }}>{product.price || 'TBA'}</span>
+                                                            {!product.in_stock && (
+                                                                <span style={{ fontSize: '0.6rem', padding: '2px 6px', backgroundColor: '#f0f0f0', borderRadius: '4px', textTransform: 'uppercase', fontWeight: 600, color: '#888' }}>Sold Out</span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </a>
                                             );
                                         })}
+                                    </div>
+                                    <div style={{ marginTop: '2.5rem', textAlign: 'center' }}>
+                                        <a href="/collections" onClick={onClose} style={{ fontSize: '0.85rem', color: 'var(--clr-text-muted)', textDecoration: 'none', borderBottom: '1px solid currentColor', paddingBottom: '2px', transition: 'color 0.2s' }}>
+                                            View all collections
+                                        </a>
                                     </div>
                                 </>
                             )}
@@ -232,21 +275,57 @@ export default function SearchOverlay({ isOpen, onClose }) {
 
                     {/* Hint when nothing typed yet */}
                     {!hasSearched && !loading && (
-                        <p style={{ marginTop: '1.5rem', color: 'var(--clr-text-muted)', fontSize: '0.9rem', textAlign: 'center' }}>
-                            Start typing to search across all products...
-                        </p>
+                        <div style={{ marginTop: '4rem', textAlign: 'center' }}>
+                            <p style={{ color: 'var(--clr-text-muted)', fontSize: '1rem', fontWeight: 300 }}>
+                                Search for products, brands or categories
+                            </p>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginTop: '1.5rem' }}>
+                                {['Skincare', 'Makeup', 'Serum', 'Moisturizer', 'Lux'].map(tag => (
+                                    <button
+                                        key={tag}
+                                        onClick={() => {
+                                            setQuery(tag);
+                                            fetchResults(tag);
+                                        }}
+                                        style={{
+                                            padding: '0.5rem 1rem',
+                                            borderRadius: '20px',
+                                            border: '1px solid var(--clr-border)',
+                                            background: 'none',
+                                            fontSize: '0.8rem',
+                                            color: 'var(--clr-text-main)',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s'
+                                        }}
+                                        onMouseEnter={e => {
+                                            e.currentTarget.style.borderColor = 'var(--clr-primary-dark)';
+                                            e.currentTarget.style.backgroundColor = 'var(--clr-surface)';
+                                        }}
+                                        onMouseLeave={e => {
+                                            e.currentTarget.style.borderColor = 'var(--clr-border)';
+                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                        }}
+                                    >
+                                        {tag}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>
 
             <style jsx global>{`
                 @keyframes slideDown {
-                    from { transform: translateY(-20px); opacity: 0; }
+                    from { transform: translateY(-30px); opacity: 0; }
                     to   { transform: translateY(0);     opacity: 1; }
                 }
                 @keyframes fadeIn {
                     from { opacity: 0; }
                     to   { opacity: 1; }
+                }
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
                 }
             `}</style>
         </>
