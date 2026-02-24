@@ -439,11 +439,11 @@ img {
 
 /* Hero Section */
 .hero {
-    height: 100vh;
+    min-height: 100svh;
     display: grid;
     grid-template-columns: 1fr;
     position: relative;
-    padding-top: 5rem;
+    overflow: hidden;
 }
 
 .hero-content {
@@ -491,6 +491,7 @@ img {
     background-position: center;
     opacity: 0.15;
     z-index: 1;
+    pointer-events: none;
 }
 
 /* Values Section */
@@ -989,6 +990,7 @@ footer {
 
     .hero {
         grid-template-columns: 1fr 1fr;
+        min-height: 100svh;
     }
 
     .hero-content {
@@ -996,11 +998,17 @@ footer {
         text-align: left;
         margin: 0;
         padding-left: 10%;
+        padding-top: 7rem;
+        padding-right: 4%;
+        z-index: 2;
     }
 
     .hero-image {
         position: relative;
         opacity: 1;
+        background-size: cover;
+        background-position: center right;
+        min-height: 100%;
     }
 }
 
