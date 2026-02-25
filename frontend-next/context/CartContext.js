@@ -11,7 +11,7 @@ export function CartProvider({ children }) {
 
     // Load from local storage on mount
     useEffect(() => {
-        const storedCart = localStorage.getItem('aura_cart');
+        const storedCart = localStorage.getItem('ophelie_cart');
         if (storedCart) {
             try {
                 setCartItems(JSON.parse(storedCart));
@@ -25,7 +25,7 @@ export function CartProvider({ children }) {
     // Save to local storage only after the initial load is complete
     useEffect(() => {
         if (!isLoaded) return;
-        localStorage.setItem('aura_cart', JSON.stringify(cartItems));
+        localStorage.setItem('ophelie_cart', JSON.stringify(cartItems));
     }, [cartItems, isLoaded]);
 
     const addToCart = (product, quantity = 1) => {

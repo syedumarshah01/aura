@@ -21,7 +21,7 @@ export default function Navbar() {
     return (
         <nav className="navbar">
             <div className="nav-container">
-                <Link href="/" className="logo" onClick={closeMenu}>Aura.</Link>
+                <Link href="/" className="logo" onClick={closeMenu}>Ophélie.</Link>
 
                 {/* Desktop links */}
                 <div className="nav-links">

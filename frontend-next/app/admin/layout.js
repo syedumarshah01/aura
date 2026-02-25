@@ -1,6 +1,6 @@
 // Standalone layout for /admin — bypasses the store layout (no navbar/footer)
 export const metadata = {
-    title: 'Admin — Aura',
+    title: 'Admin — Ophélie',
 };
 
 export default function AdminLayout({ children }) {

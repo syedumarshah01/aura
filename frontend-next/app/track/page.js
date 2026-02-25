@@ -147,7 +147,7 @@ function TrackOrderInner() {
                                 type="text"
                                 value={orderNumber}
                                 onChange={e => setOrderNumber(e.target.value)}
-                                placeholder="AUR-XXXXXXXX"
+                                placeholder="OPH-XXXXXXXX"
                                 required
                                 onFocus={e => e.target.style.borderColor = 'var(--clr-primary)'}
                                 onBlur={e => e.target.style.borderColor = 'var(--clr-border)'}

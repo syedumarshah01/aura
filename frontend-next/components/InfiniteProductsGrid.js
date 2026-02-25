@@ -141,7 +141,7 @@ export default function InfiniteProductsGrid({ category = '' }) {
                                 </button>
                             </div>
                             <div className="product-info">
-                                <div className="product-brand">Aura Select</div>
+                                <div className="product-brand">Ophélie Select</div>
                                 <h3 className="product-title" title={cleanTitle(product.title)}>
                                     {cleanTitle(product.title).split(' - ')[0] || cleanTitle(product.title)}
                                 </h3>

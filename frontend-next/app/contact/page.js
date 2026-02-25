@@ -127,7 +127,7 @@ export default function ContactPage() {
 
                         {/* Social */}
                         <div>
-                            <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--clr-text-muted)', marginBottom: '1rem' }}>Follow Aura</p>
+                            <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--clr-text-muted)', marginBottom: '1rem' }}>Follow Ophélie</p>
                             <div style={{ display: 'flex', gap: '0.75rem' }}>
                                 {['Instagram', 'TikTok', 'Pinterest'].map(platform => (
                                     <a key={platform} href="#" style={{

@@ -18,7 +18,7 @@ export default function LayoutShell({ children }) {
             <footer>
                 <div className="footer-grid">
                     <div className="footer-brand">
-                        <h2>Aura.</h2>
+                        <h2>Ophélie.</h2>
                         <p>Pure ingredients. Real results. <br />Your journey to luminous skin starts here.</p>
                     </div>
                     <div className="footer-links">
@@ -45,7 +45,7 @@ export default function LayoutShell({ children }) {
                     </div>
                 </div>
                 <div className="footer-bottom">
-                    <p>&copy; 2026 Aura Cosmetics. All rights reserved.</p>
+                    <p>&copy; 2026 Ophélie Cosmetics. All rights reserved.</p>
                     <div className="legal-links">
                         <a href="#">Privacy Policy</a>
                         <a href="#">Terms of Service</a>

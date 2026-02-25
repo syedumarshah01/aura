@@ -57,7 +57,7 @@ export default function AdminPage() {
     const [loginLoading, setLoginLoading] = useState(false);
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && sessionStorage.getItem('aura_admin') === 'true') {
+        if (typeof window !== 'undefined' && sessionStorage.getItem('ophelie_admin') === 'true') {
             setAuthed(true);
         }
         setAuthChecked(true);
@@ -75,7 +75,7 @@ export default function AdminPage() {
             });
             const data = await res.json();
             if (data.success) {
-                sessionStorage.setItem('aura_admin', 'true');
+                sessionStorage.setItem('ophelie_admin', 'true');
                 setAuthed(true);
             } else {
                 setLoginError(data.message || 'Invalid password.');
@@ -86,7 +86,7 @@ export default function AdminPage() {
     };
 
     const handleLogout = () => {
-        sessionStorage.removeItem('aura_admin');
+        sessionStorage.removeItem('ophelie_admin');
         setAuthed(false);
         setPassword('');
     };
@@ -202,7 +202,7 @@ export default function AdminPage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: C.bg, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                     <form onSubmit={handleLogin} style={{ width: '100%', maxWidth: '380px', padding: '2.5rem', backgroundColor: C.surface, borderRadius: '16px', border: `1px solid ${C.border}`, boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
                         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                            <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '2rem', color: C.accent, margin: 0 }}>Aura.</p>
+                            <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '2rem', color: C.accent, margin: 0 }}>Ophélie.</p>
                             <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: C.muted, marginTop: '4px' }}>Admin Dashboard</p>
                         </div>
                         <input
@@ -225,7 +225,7 @@ export default function AdminPage() {
                     {/* ─── Sidebar ─────────────────────────────────────────────── */}
                     <aside style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: '210px', backgroundColor: C.sidebar, display: 'flex', flexDirection: 'column', padding: '1.75rem 1.25rem', zIndex: 50 }}>
                         <div style={{ marginBottom: '2.5rem' }}>
-                            <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '1.6rem', color: C.accent, margin: 0 }}>Aura.</p>
+                            <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '1.6rem', color: C.accent, margin: 0 }}>Ophélie.</p>
                             <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>Admin</p>
                         </div>
 

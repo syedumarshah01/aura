@@ -24,14 +24,14 @@ const sendContactEmail = async (req, res) => {
 
         // Notify store owner
         await transporter.sendMail({
-            from: `"Aura Contact" <${process.env.GMAIL_USER}>`,
+            from: `"Ophélie Contact" <${process.env.GMAIL_USER}>`,
             to: process.env.GMAIL_USER,
             replyTo: email,
             subject: subject ? `[Contact] ${subject}` : `[Contact Form] Message from ${name}`,
             html: `
                 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;background:#fcfaf8;border:1px solid #e8e1dc;border-radius:12px;overflow:hidden;">
                     <div style="background:#2d2825;padding:24px 32px;">
-                        <h1 style="color:#c9a99d;font-family:Georgia,serif;font-style:italic;font-size:1.5rem;margin:0;">Aura. — Contact Form</h1>
+                        <h1 style="color:#c9a99d;font-family:Georgia,serif;font-style:italic;font-size:1.5rem;margin:0;">Ophélie. — Contact Form</h1>
                     </div>
                     <div style="padding:32px;">
                         <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
@@ -50,13 +50,13 @@ const sendContactEmail = async (req, res) => {
 
         // Auto-reply to sender
         await transporter.sendMail({
-            from: `"Aura Beauty" <${process.env.GMAIL_USER}>`,
+            from: `"Ophélie Beauty" <${process.env.GMAIL_USER}>`,
             to: email,
-            subject: `We received your message | Aura`,
+            subject: `We received your message | Ophélie`,
             html: `
                 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;background:#fcfaf8;border:1px solid #e8e1dc;border-radius:12px;overflow:hidden;">
                     <div style="background:#2d2825;padding:32px;text-align:center;">
-                        <h1 style="color:#c9a99d;font-family:Georgia,serif;font-style:italic;font-size:2rem;margin:0;">Aura.</h1>
+                        <h1 style="color:#c9a99d;font-family:Georgia,serif;font-style:italic;font-size:2rem;margin:0;">Ophélie.</h1>
                     </div>
                     <div style="padding:36px;text-align:center;">
                         <h2 style="color:#2d2825;font-family:Georgia,serif;font-size:1.5rem;margin-bottom:0.75rem;">Message Received</h2>
@@ -65,7 +65,7 @@ const sendContactEmail = async (req, res) => {
                         </p>
                     </div>
                     <div style="background:#f5f0ed;padding:20px;text-align:center;border-top:1px solid #e8e1dc;">
-                        <p style="color:#7a726d;font-size:0.75rem;margin:0;">© ${new Date().getFullYear()} Aura Beauty. Karachi, Pakistan.</p>
+                        <p style="color:#7a726d;font-size:0.75rem;margin:0;">© ${new Date().getFullYear()} Ophélie Beauty. Karachi, Pakistan.</p>
                     </div>
                 </div>
             `

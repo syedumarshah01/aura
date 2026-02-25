@@ -10,7 +10,7 @@ const faqs = [
         items: [
             { q: 'How do I place an order?', a: 'Simply browse our collections, add your favourite products to your bag, and proceed to checkout. You\'ll need to provide your shipping details and confirm your order — no account required.' },
             { q: 'Can I modify or cancel my order?', a: 'Orders can be cancelled within 1 hour of placement by contacting us via our Contact page. Once processing has begun, we\'re unable to make changes — but you\'re always welcome to return items.' },
-            { q: 'How do I track my order?', a: 'Visit our Track Order page and enter your order number (e.g. AUR-XXXXXX). You will see real-time status updates for your shipment.' },
+            { q: 'How do I track my order?', a: 'Visit our Track Order page and enter your order number (e.g. OPH-XXXXXX). You will see real-time status updates for your shipment.' },
         ]
     },
     {
@@ -32,7 +32,7 @@ const faqs = [
     {
         category: 'Products',
         items: [
-            { q: 'Are your products cruelty-free?', a: 'Every product listed on Aura is never tested on animals. We are committed to cruelty-free, ethical beauty.' },
+            { q: 'Are your products cruelty-free?', a: 'Every product listed on Ophélie is never tested on animals. We are committed to cruelty-free, ethical beauty.' },
             { q: 'Are your products authentic?', a: 'Yes — we source all products directly from authorised distributors and brand partners, guaranteeing 100% authenticity.' },
             { q: 'What if I have sensitive skin?', a: 'We recommend checking the full ingredient list on each product page. If in doubt, contact us and our beauty advisors will help you find the perfect match.' },
         ]

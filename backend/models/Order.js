@@ -30,7 +30,7 @@ const orderSchema = new mongoose.Schema({
 // Auto-generate a short human-readable order number before saving
 orderSchema.pre('save', async function () {
     if (!this.orderNumber) {
-        this.orderNumber = 'AUR-' + Date.now().toString(36).toUpperCase();
+        this.orderNumber = 'OPH-' + Date.now().toString(36).toUpperCase();
     }
 });
 

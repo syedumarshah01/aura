@@ -165,7 +165,7 @@ export default function ReturnsPage() {
                                 <div className="grid-2">
                                     <div>
                                         <label style={labelStyle}>Order Number <span style={{ color: 'var(--clr-primary-dark)' }}>*</span></label>
-                                        <input style={inputStyle} type="text" name="orderNumber" value={formData.orderNumber} onChange={handleChange} required placeholder="AUR-XXXXXXXX" onFocus={focusIn} onBlur={focusOut} />
+                                        <input style={inputStyle} type="text" name="orderNumber" value={formData.orderNumber} onChange={handleChange} required placeholder="OPH-XXXXXXXX" onFocus={focusIn} onBlur={focusOut} />
                                     </div>
                                     <div>
                                         <label style={labelStyle}>Email used at checkout <span style={{ color: 'var(--clr-primary-dark)' }}>*</span></label>

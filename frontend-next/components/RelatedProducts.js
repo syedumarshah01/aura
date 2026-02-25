@@ -241,7 +241,7 @@ export default function RelatedProducts({ currentProductId, subcategory }) {
                                     color: 'var(--clr-text-muted)',
                                     marginBottom: '0.3rem',
                                 }}>
-                                    {product.subcategory || 'Aura Select'}
+                                    {product.subcategory || 'Ophélie Select'}
                                 </p>
                                 <h3 style={{
                                     fontFamily: 'var(--font-serif)',

@@ -19,11 +19,11 @@ const playfair = Playfair_Display({
 });
 
 export const metadata = {
-    title: 'Aura | Premium Beauty & Cosmetics',
+    title: 'Ophélie | Premium Beauty & Cosmetics',
     description: 'Discover premium beauty and skincare products tailored for your glow.',
     keywords: ['beauty', 'cosmetics', 'skincare', 'makeup', 'ethical', 'clean beauty'],
     openGraph: {
-        title: 'Aura | Premium Beauty & Cosmetics',
+        title: 'Ophélie | Premium Beauty & Cosmetics',
         description: 'Elevate your daily ritual with our curated collection of clean, effective, and ethically sourced beauty essentials.',
         type: 'website',
     },

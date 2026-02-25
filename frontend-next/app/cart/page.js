@@ -137,7 +137,7 @@ export default function CartPage() {
                                             {/* Info */}
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                                                 <p style={{ fontSize: '0.7rem', color: 'var(--clr-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                                                    Aura Select
+                                                    Ophélie Select
                                                 </p>
                                                 <Link href={`/product/${item._id}`} style={{ textDecoration: 'none', color: 'var(--clr-text-main)' }}>
                                                     <h3 style={{

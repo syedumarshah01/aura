@@ -8,13 +8,13 @@ export async function generateMetadata({ params }) {
 
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/products/${id}`, { cache: 'no-store' });
-        if (!response.ok) return { title: 'Product Not Found | Aura' };
+        if (!response.ok) return { title: 'Product Not Found | Ophélie' };
 
         const product = await response.json();
         const cleanTitle = product.title.replace(/^(?:Buy|Purchase|Order)\s+/i, '').replace(/\s*(?:-|\|)?\s*(?:Online at best price in pakistan|naheed\.pk)\s*/ig, '').trim();
 
         return {
-            title: `${cleanTitle} | Aura Premium Beauty`,
+            title: `${cleanTitle} | Ophélie Premium Beauty`,
             description: product.description || `Discover ${cleanTitle}, a premium addition to your daily ritual.`,
             openGraph: {
                 title: cleanTitle,
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }) {
             },
         };
     } catch (e) {
-        return { title: 'Product | Aura' };
+        return { title: 'Product | Ophélie' };
     }
 }
 
@@ -66,7 +66,7 @@ export default async function ProductPage({ params }) {
     return (
         <InteractiveClientWrapper>
             <main style={{ paddingTop: '6rem', backgroundColor: 'var(--clr-bg)' }}>
-                <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', padding: '4rem 1rem' }}>
+                <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '4rem', padding: '4rem 1rem' }}>
 
                     {/* Offload the heavy interactive states (Image Gallery toggles, Add to Cart context, Accordions) into a tightly bounded Client Component */}
                     <ProductClientBoundary

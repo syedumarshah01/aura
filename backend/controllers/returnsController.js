@@ -53,14 +53,14 @@ async function sendReturnEmails(doc) {
 
     // Email to store owner
     await transporter.sendMail({
-        from: `"Aura Returns" <${process.env.GMAIL_USER}>`,
+        from: `"Ophélie Returns" <${process.env.GMAIL_USER}>`,
         to: 'syedumarshah04@gmail.com',
         replyTo: email,
         subject: `[Return Request] ${refNumber} — Order ${orderNumber}`,
         html: `
             <div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #FCFAf8; border: 1px solid #E8E1DC; border-radius: 12px; overflow: hidden;">
                 <div style="background: #2D2825; padding: 24px 32px;">
-                    <h1 style="color: #C9A99D; font-family: Georgia, serif; font-style: italic; font-size: 1.5rem; margin: 0;">Aura. — Return Request</h1>
+                    <h1 style="color: #C9A99D; font-family: Georgia, serif; font-style: italic; font-size: 1.5rem; margin: 0;">Ophélie. — Return Request</h1>
                 </div>
                 <div style="padding: 32px;">
                     <table style="width:100%; border-collapse: collapse; margin-bottom: 24px;">
@@ -89,13 +89,13 @@ async function sendReturnEmails(doc) {
 
     // Auto-reply to customer with their ref number
     await transporter.sendMail({
-        from: `"Aura Beauty" <${process.env.GMAIL_USER}>`,
+        from: `"Ophélie Beauty" <${process.env.GMAIL_USER}>`,
         to: email,
-        subject: `Return Request Received — ${refNumber} | Aura`,
+        subject: `Return Request Received — ${refNumber} | Ophélie`,
         html: `
             <div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #FCFAf8; border: 1px solid #E8E1DC; border-radius: 12px; overflow: hidden;">
                 <div style="background: #2D2825; padding: 32px; text-align: center;">
-                    <h1 style="color: #C9A99D; font-family: Georgia, serif; font-style: italic; font-size: 2rem; margin: 0;">Aura.</h1>
+                    <h1 style="color: #C9A99D; font-family: Georgia, serif; font-style: italic; font-size: 2rem; margin: 0;">Ophélie.</h1>
                 </div>
                 <div style="padding: 36px; text-align: center;">
                     <h2 style="color: #2D2825; font-family: Georgia, serif; font-size: 1.5rem; margin-bottom: 0.75rem;">Return Request Received</h2>
@@ -112,7 +112,7 @@ async function sendReturnEmails(doc) {
                     <a href="http://localhost:3000/track" style="display:inline-block;background:#2D2825;color:#fff;text-decoration:none;padding:14px 32px;border-radius:30px;font-size:0.9rem;font-weight:600;">Track Your Order</a>
                 </div>
                 <div style="background:#F5F0ED;padding:20px;text-align:center;border-top:1px solid #E8E1DC;">
-                    <p style="color:#7A726D;font-size:0.75rem;margin:0;">© 2026 Aura Beauty. Karachi, Pakistan.</p>
+                    <p style="color:#7A726D;font-size:0.75rem;margin:0;">© 2026 Ophélie Beauty. Karachi, Pakistan.</p>
                 </div>
             </div>
         `

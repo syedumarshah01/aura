@@ -24,7 +24,7 @@ let lastProcessedIndex = 0;
 let isProcessing = false;
 
 async function generateOllamaCopy(productTitle) {
-    const systemPrompt = `You are a high-end luxury e-commerce copywriter writing for a premium cosmetics and beauty brand called Aura. 
+    const systemPrompt = `You are a high-end luxury e-commerce copywriter writing for a premium cosmetics and beauty brand called Ophélie. 
 Your goal is to write completely human-like, sensory, and appealing copy based ONLY on the product title provided. 
 Do NOT use robotic AI jargon like "Elevate your routine", "Unlock", or "Discover the secret". Speak directly to the senses and benefits.
 

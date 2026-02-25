@@ -68,7 +68,7 @@ export default function Home() {
                         </div>
                         <div className="about-text reveal-right">
                             <h2>Nature Meets <br /><em>Science</em></h2>
-                            <p>At Aura, we believe true beauty begins with skin health. Our formulations bridge the gap between potent botanical extracts and cutting-edge dermatological science. Every drop is crafted to restore, protect, and illuminate.</p>
+                            <p>At Ophélie, we believe true beauty begins with skin health. Our formulations bridge the gap between potent botanical extracts and cutting-edge dermatological science. Every drop is crafted to restore, protect, and illuminate.</p>
                             <a href="#" className="link-btn">Discover Our Story &rarr;</a>
                         </div>
                     </div>
@@ -80,7 +80,7 @@ export default function Home() {
                 {/* Newsletter */}
                 <section className="newsletter">
                     <div className="newsletter-content">
-                        <h2>Join The Aura Club</h2>
+                        <h2>Join The Ophélie Club</h2>
                         <p>Sign up to receive 15% off your first order, exclusive access to new launches, and skincare tips.</p>
                         <form className="subscribe-form" id="subscribe-form">
                             <input type="email" placeholder="Your email address" required />

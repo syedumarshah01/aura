@@ -128,7 +128,7 @@ export default function FeaturedProducts() {
                                 </button>
                             </div>
                             <div className="product-info">
-                                <div className="product-brand">{catLabel || 'Aura Select'}</div>
+                                <div className="product-brand">{catLabel || 'Ophélie Select'}</div>
                                 <h3 className="product-title" title={title}>
                                     {title.split(' - ')[0] || title}
                                 </h3>

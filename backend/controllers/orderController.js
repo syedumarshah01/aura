@@ -88,7 +88,7 @@ async function sendOrderConfirmationEmail(order) {
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Order Confirmed — Aura</title>
+        <title>Order Confirmed — Ophélie</title>
     </head>
     <body style="margin:0;padding:0;background:#f0ebe6;font-family:'Helvetica Neue',Arial,sans-serif;">
 
@@ -99,7 +99,7 @@ async function sendOrderConfirmationEmail(order) {
                     <!-- ▸ Header -->
                     <tr>
                         <td style="background:#2d2825;padding:40px 40px 32px;border-radius:16px 16px 0 0;text-align:center;">
-                            <div style="font-family:Georgia,serif;font-style:italic;font-size:36px;color:#c9a99d;letter-spacing:-0.5px;margin-bottom:20px;">Aura.</div>
+                            <div style="font-family:Georgia,serif;font-style:italic;font-size:36px;color:#c9a99d;letter-spacing:-0.5px;margin-bottom:20px;">Ophélie.</div>
                             <div style="display:inline-block;background:#3d3530;border:1px solid #4a3f3a;border-radius:30px;padding:8px 20px;">
                                 <span style="font-size:13px;color:#c9a99d;letter-spacing:0.08em;text-transform:uppercase;">Order Confirmed</span>
                             </div>
@@ -202,9 +202,9 @@ async function sendOrderConfirmationEmail(order) {
                     <!-- ▸ Footer -->
                     <tr>
                         <td style="background:#2d2825;padding:24px 40px;border-radius:0 0 16px 16px;text-align:center;">
-                            <p style="margin:0 0 8px;font-family:Georgia,serif;font-style:italic;font-size:18px;color:#c9a99d;">Aura.</p>
+                            <p style="margin:0 0 8px;font-family:Georgia,serif;font-style:italic;font-size:18px;color:#c9a99d;">Ophélie.</p>
                             <p style="margin:0;font-size:12px;color:#7a726d;line-height:1.6;">
-                                © ${new Date().getFullYear()} Aura Beauty. Karachi, Pakistan.<br/>
+                                © ${new Date().getFullYear()} Ophélie Beauty. Karachi, Pakistan.<br/>
                                 You're receiving this because you placed an order with us.
                             </p>
                         </td>
@@ -219,9 +219,9 @@ async function sendOrderConfirmationEmail(order) {
     `;
 
     await transporter.sendMail({
-        from: `"Aura Beauty" <${process.env.GMAIL_USER}>`,
+        from: `"Ophélie Beauty" <${process.env.GMAIL_USER}>`,
         to: order.email,
-        subject: `Order Confirmed — ${order.orderNumber} | Aura`,
+        subject: `Order Confirmed — ${order.orderNumber} | Ophélie`,
         html: emailHtml,
     });
 }
