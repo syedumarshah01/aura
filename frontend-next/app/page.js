@@ -14,7 +14,17 @@ export default function Home() {
                         <p>Elevate your daily ritual with our curated collection of clean, effective, and ethically sourced beauty essentials.</p>
                         <a href="#featured" className="cta-btn">Shop The Collection</a>
                     </div>
-                    <div className="hero-image fade-in"></div>
+                    <div className="hero-image fade-in">
+                        <Image
+                            src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=2000&auto=format&fit=crop"
+                            alt="Ophélie Hero Beauty Background"
+                            fill
+                            priority
+                            style={{ objectFit: 'cover', objectPosition: 'center' }}
+                            sizes="100vw"
+                            quality={85}
+                        />
+                    </div>
                 </section>
 
                 {/* Value Proposition */}

@@ -16,12 +16,21 @@ export async function generateMetadata({ params }) {
         return {
             title: `${cleanTitle} | Ophélie Premium Beauty`,
             description: product.description || `Discover ${cleanTitle}, a premium addition to your daily ritual.`,
+            alternates: {
+                canonical: `/product/${id}`,
+            },
             openGraph: {
                 title: cleanTitle,
                 description: product.description || `Discover ${cleanTitle}, a premium addition to your daily ritual.`,
+                url: `/product/${id}`,
                 images: product.images && product.images.length > 0 ? [{ url: product.images[0] }] : [],
                 type: 'website',
             },
+            twitter: {
+                card: 'summary_large_image',
+                title: cleanTitle,
+                description: product.description,
+            }
         };
     } catch (e) {
         return { title: 'Product | Ophélie' };
@@ -63,8 +72,34 @@ export default async function ProductPage({ params }) {
     const formatPrice = (priceStr) => priceStr || 'Price TBA';
     const isSoldOut = !product.in_stock;
 
+    // Construct Product JSON-LD for Rich Snippets
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: cleanTitle,
+        image: product.images || [],
+        description: product.description || `Buy ${cleanTitle} at Ophélie Premium Beauty.`,
+        sku: product.sku || product._id,
+        brand: {
+            '@type': 'Brand',
+            name: product.brand || 'Ophélie',
+        },
+        offers: {
+            '@type': 'Offer',
+            url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ophelie.com'}/product/${id}`,
+            priceCurrency: 'PKR',
+            price: product.price ? product.price.replace(/[^0-9.]/g, '') : '0',
+            availability: isSoldOut ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+            itemCondition: 'https://schema.org/NewCondition',
+        }
+    };
+
     return (
         <InteractiveClientWrapper>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <main style={{ paddingTop: '6rem', backgroundColor: 'var(--clr-bg)' }}>
                 <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '4rem', padding: '4rem 1rem' }}>
 

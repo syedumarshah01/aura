@@ -40,7 +40,7 @@ export default function InteractiveClientWrapper({ children }) {
             }
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
 
         // Initial check for scroll position
         handleScroll();
