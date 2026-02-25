@@ -135,9 +135,8 @@ function TrackOrderInner() {
                     </p>
                 </div>
 
-                {/* Search Form */}
-                <div style={{ maxWidth: '520px', margin: '0 auto 3rem', padding: '0 2rem' }}>
-                    <form onSubmit={handleTrack} style={{ backgroundColor: 'var(--clr-surface)', borderRadius: '20px', padding: '2.5rem', border: '1px solid var(--clr-border)', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ maxWidth: '520px', margin: '0 auto 3rem', padding: '0 clamp(1rem, 4vw, 2rem)' }}>
+                    <form onSubmit={handleTrack} style={{ backgroundColor: 'var(--clr-surface)', borderRadius: '20px', padding: 'clamp(1.5rem, 5vw, 2.5rem)', border: '1px solid var(--clr-border)', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--clr-text-muted)', marginBottom: '0.5rem' }}>
                                 Order Number
@@ -185,12 +184,12 @@ function TrackOrderInner() {
                     <div
                         id="order-result"
                         style={{
-                            maxWidth: '680px', margin: '0 auto', padding: '0 2rem',
+                            maxWidth: '680px', margin: '0 auto', padding: '0 clamp(1rem, 4vw, 2rem)',
                             animation: 'fadeInUp 0.5s ease both',
                         }}
                     >
                         <style>{`@keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }`}</style>
-                        <div style={{ backgroundColor: 'var(--clr-surface)', borderRadius: '20px', padding: '2.5rem', border: '1px solid var(--clr-border)', boxShadow: '0 10px 40px rgba(0,0,0,0.04)' }}>
+                        <div style={{ backgroundColor: 'var(--clr-surface)', borderRadius: '20px', padding: 'clamp(1.5rem, 5vw, 2.5rem)', border: '1px solid var(--clr-border)', boxShadow: '0 10px 40px rgba(0,0,0,0.04)' }}>
 
                             {/* Order Header */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.5rem' }}>
@@ -212,7 +211,7 @@ function TrackOrderInner() {
                             <StatusTimeline currentStatus={order.orderStatus} />
 
                             {/* Shipping Address */}
-                            <div style={{ borderTop: '1px solid var(--clr-border)', paddingTop: '1.5rem', marginTop: '0.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            <div style={{ borderTop: '1px solid var(--clr-border)', paddingTop: '1.5rem', marginTop: '0.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.5rem' }}>
                                 <div>
                                     <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--clr-text-muted)', marginBottom: '0.5rem' }}>Shipping To</p>
                                     <p style={{ fontWeight: 500, color: 'var(--clr-text-main)', lineHeight: 1.7, fontSize: '0.9rem' }}>

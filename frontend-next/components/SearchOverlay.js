@@ -112,7 +112,6 @@ export default function SearchOverlay({ isOpen, onClose }) {
                 }}
             />
 
-            {/* Panel */}
             <div
                 style={{
                     position: 'fixed',
@@ -123,11 +122,12 @@ export default function SearchOverlay({ isOpen, onClose }) {
                     backgroundColor: 'rgba(252, 251, 250, 0.98)',
                     backdropFilter: 'blur(20px)',
                     WebkitBackdropFilter: 'blur(20px)',
-                    padding: '2.5rem 1.5rem',
+                    padding: 'clamp(1.5rem, 5vw, 2.5rem) clamp(1rem, 4vw, 1.5rem)',
                     boxShadow: '0 10px 50px rgba(0,0,0,0.1)',
                     animation: 'slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                     maxHeight: '90vh',
                     overflowY: 'auto',
+                    overflowX: 'hidden',
                 }}
             >
                 {/* Search Input Row */}
@@ -148,14 +148,16 @@ export default function SearchOverlay({ isOpen, onClose }) {
                             autoComplete="off"
                             style={{
                                 flex: 1,
+                                minWidth: 0,
                                 border: 'none',
                                 background: 'transparent',
                                 outline: 'none',
                                 fontFamily: 'var(--font-sans)',
-                                fontSize: '1.5rem',
+                                fontSize: 'clamp(1.1rem, 5vw, 1.5rem)',
                                 color: 'var(--clr-text-main)',
                                 fontWeight: 300,
                                 letterSpacing: '-0.01em',
+                                textOverflow: 'ellipsis',
                             }}
                         />
 
@@ -168,7 +170,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
                         {query && !loading && (
                             <button
                                 onClick={handleClear}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--clr-text-muted)', display: 'flex', padding: '0.25rem', opacity: 0.5, transition: 'opacity 0.2s' }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--clr-text-muted)', display: 'flex', padding: '0.25rem', opacity: 0.5, transition: 'opacity 0.2s', flexShrink: 0 }}
                                 onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
                                 onMouseLeave={(e) => e.currentTarget.style.opacity = '0.5'}
                             >
@@ -197,7 +199,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
                         <div style={{ marginTop: '2rem' }}>
                             {results.length === 0 ? (
                                 <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--clr-text-muted)' }}>
-                                    <p style={{ fontSize: '1.1rem', fontWeight: 400 }}>No results found for &ldquo;{query}&rdquo;</p>
+                                    <p style={{ fontSize: '1.1rem', fontWeight: 400, wordBreak: 'break-word', padding: '0 1rem' }}>No results found for &ldquo;{query}&rdquo;</p>
                                     <p style={{ fontSize: '0.9rem', marginTop: '0.5rem', opacity: 0.6 }}>Try searching for another product or category.</p>
                                 </div>
                             ) : (
@@ -207,7 +209,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
                                             Results ({results.length})
                                         </p>
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.25rem' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 350px), 1fr))', gap: '1.25rem' }}>
                                         {results.map((product) => {
                                             const img = product.images?.[0] || 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop';
                                             const title = cleanTitle(product.title);
