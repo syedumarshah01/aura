@@ -37,14 +37,14 @@ export default function Navbar() {
                         aria-label="Search"
                         onClick={() => setIsSearchOpen(true)}
                     >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </button>
 
-                    <Link href="/cart" className="icon-btn" aria-label="Cart" onClick={closeMenu} style={{ position: 'relative', display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <Link href="/cart" className="icon-btn" aria-label="Cart" onClick={closeMenu} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: 'inherit' }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                         {cartCount > 0 && (
                             <span style={{
-                                position: 'absolute', top: '-6px', right: '-10px',
+                                position: 'absolute', top: '-1px', right: '-1px',
                                 backgroundColor: 'var(--clr-primary-dark)', color: '#fff',
                                 fontSize: '0.65rem', fontWeight: 'bold', borderRadius: '50%',
                                 minWidth: '18px', height: '18px',
@@ -72,13 +72,18 @@ export default function Navbar() {
 
             {/* Mobile full-screen menu */}
             <div className={`mobile-menu${menuOpen ? ' active' : ''}`} aria-hidden={!menuOpen}>
-                <Link href="/" onClick={closeMenu}>Home</Link>
-                <Link href="/collections" onClick={closeMenu}>Collections</Link>
-                <Link href="/#about" onClick={closeMenu}>Our Story</Link>
-                <Link href="/#featured" onClick={closeMenu}>Featured</Link>
-                <Link href="/track" onClick={closeMenu} style={{ fontSize: '1rem', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: '1rem' }}>Track Order</Link>
-                <Link href="/returns" onClick={closeMenu} style={{ fontSize: '1rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Returns</Link>
-                <Link href="/contact" onClick={closeMenu} style={{ fontSize: '1rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Contact</Link>
+                <div className="mobile-menu-inner">
+                    <Link href="/" className="mobile-nav-link" onClick={closeMenu}>Home</Link>
+                    <Link href="/collections" className="mobile-nav-link" onClick={closeMenu}>Collections</Link>
+                    <Link href="/#about" className="mobile-nav-link" onClick={closeMenu}>Our Story</Link>
+                    <Link href="/#featured" className="mobile-nav-link" onClick={closeMenu}>Featured</Link>
+
+                    <div className="mobile-menu-divider"></div>
+
+                    <Link href="/track" className="mobile-nav-sublink" onClick={closeMenu}>Track Order</Link>
+                    <Link href="/returns" className="mobile-nav-sublink" onClick={closeMenu}>Returns</Link>
+                    <Link href="/contact" className="mobile-nav-sublink" onClick={closeMenu}>Contact</Link>
+                </div>
             </div>
 
             {/* Search Overlay */}
