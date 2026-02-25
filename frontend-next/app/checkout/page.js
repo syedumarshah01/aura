@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import InteractiveClientWrapper from '../../components/InteractiveClientWrapper';
 import Image from 'next/image';
@@ -85,6 +85,13 @@ export default function CheckoutPage() {
         }
     };
 
+    // — Auto-scroll on success
+    useEffect(() => {
+        if (isSuccess) {
+            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        }
+    }, [isSuccess]);
+
     // — Success screen
     if (isSuccess) {
         return (
@@ -117,16 +124,17 @@ export default function CheckoutPage() {
                 <main style={{
                     minHeight: '100vh',
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     justifyContent: 'center',
                     backgroundColor: 'var(--clr-bg)',
                     padding: '2rem',
-                    paddingTop: '7rem',
+                    paddingTop: '9rem',
                 }}>
                     <div className="success-card" style={{
                         textAlign: 'center',
                         maxWidth: '520px',
                         width: '100%',
+                        marginTop: '2rem',
                     }}>
                         {/* ── Animated check circle ── */}
                         <div style={{ position: 'relative', width: '100px', height: '100px', margin: '0 auto 2rem', animation: 'scaleIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.1s both' }}>
