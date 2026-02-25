@@ -34,6 +34,10 @@ const productSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Performance Indexes
+productSchema.index({ title: 'text' });
+productSchema.index({ in_stock: 1, subcategory: 1 });
+
 const Product = mongoose.model('Product', productSchema);
 
 module.exports = Product;

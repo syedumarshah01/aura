@@ -34,5 +34,9 @@ orderSchema.pre('save', async function () {
     }
 });
 
+// Performance Indexes for fast Admin Aggregations
+orderSchema.index({ orderStatus: 1 });
+orderSchema.index({ createdAt: -1 });
+
 const Order = mongoose.model('Order', orderSchema);
 module.exports = Order;

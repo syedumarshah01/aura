@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const cache = require('../utils/cache');
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -19,6 +20,7 @@ const getProducts = async (req, res) => {
 
         const count = await Product.countDocuments(filter);
         const products = await Product.find(filter)
+            .select('-description -highlights')
             .limit(pageSize)
             .skip(pageSize * (page - 1))
             .lean();
@@ -67,11 +69,20 @@ const getProductById = async (req, res) => {
 // @access  Public
 const getCategories = async (req, res) => {
     try {
+        const cacheKey = 'categories_list';
+        const cachedData = cache.get(cacheKey);
+
+        if (cachedData) {
+            return res.json(cachedData);
+        }
+
         const categories = await Product.distinct('subcategory');
         // Filter out nulls/empty strings and sort
         const clean = categories
             .filter(c => c && c.trim() !== '')
             .sort((a, b) => a.localeCompare(b));
+
+        cache.set(cacheKey, clean);
         res.json(clean);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
@@ -84,18 +95,25 @@ const getCategories = async (req, res) => {
 const getTrendingProducts = async (req, res) => {
     try {
         const limit = Number(req.query.limit) || 8;
+        const cacheKey = `trending_products_${limit}`;
+        const cachedData = cache.get(cacheKey);
+
+        if (cachedData) {
+            return res.json(cachedData);
+        }
 
         // Get all distinct subcategories that have in-stock products
         const categories = await Product.distinct('subcategory', { in_stock: true });
 
         const cleanCats = categories.filter(c => c && c.trim() !== '');
 
-        // Pick 1 random in-stock product from each category
+        // Pick 1 random in-stock product from each category (Excluding heavy text blobs for the payload)
         const picks = await Promise.all(
             cleanCats.map(cat =>
                 Product.aggregate([
                     { $match: { subcategory: cat, in_stock: true } },
                     { $sample: { size: 1 } },
+                    { $project: { description: 0, highlights: 0 } }
                 ])
             )
         );
@@ -112,6 +130,7 @@ const getTrendingProducts = async (req, res) => {
             .sort(() => Math.random() - 0.5)
             .slice(0, limit);
 
+        cache.set(cacheKey, all);
         res.json(all);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
