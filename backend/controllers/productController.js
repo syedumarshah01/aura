@@ -107,9 +107,14 @@ const getTrendingProducts = async (req, res) => {
 
         const cleanCats = categories.filter(c => c && c.trim() !== '');
 
-        // Pick 1 random in-stock product from each category (Excluding heavy text blobs for the payload)
+        // --- MASSIVE OPTIMIZATION ---
+        // Shuffle the categories first and take ONLY up to `limit` categories.
+        // This drops the number of $aggregate DB queries from O(total_categories) to O(limit) 
+        const selectedCats = cleanCats.sort(() => Math.random() - 0.5).slice(0, limit);
+
+        // Pick 1 random in-stock product ONLY from the randomly selected categories
         const picks = await Promise.all(
-            cleanCats.map(cat =>
+            selectedCats.map(cat =>
                 Product.aggregate([
                     { $match: { subcategory: cat, in_stock: true } },
                     { $sample: { size: 1 } },
