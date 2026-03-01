@@ -1027,8 +1027,7 @@ footer {
     }
 
     .product-img-wrapper {
-        aspect-ratio: 1 / 1.3;
-        /* Taller images to make cards look bigger */
+        aspect-ratio: 1 / 1;
         background-color: var(--clr-bg);
         position: relative;
         overflow: hidden;
@@ -1038,6 +1037,10 @@ footer {
     .product-img-wrapper img {
         mix-blend-mode: normal !important;
         padding: 0;
+    }
+
+    .product-tags {
+        display: none !important;
     }
 
     .product-info {

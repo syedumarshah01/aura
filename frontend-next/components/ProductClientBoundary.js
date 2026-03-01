@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function ProductClientBoundary({ product, cleanTitle, formattedPrice, isSoldOut }) {
@@ -9,6 +10,12 @@ export default function ProductClientBoundary({ product, cleanTitle, formattedPr
     const [mainImage, setMainImage] = useState(product.images?.[0] || fallbackImg);
     const [openAccordion, setOpenAccordion] = useState(null);
     const { addToCart } = useCart();
+    const router = useRouter();
+
+    const handleBuyNow = () => {
+        addToCart(product);
+        router.push('/checkout');
+    };
 
     const toggleAccordion = (section) => {
         setOpenAccordion(openAccordion === section ? null : section);
@@ -87,13 +94,22 @@ export default function ProductClientBoundary({ product, cleanTitle, formattedPr
 
                 <div className="actions" style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
                     <button
-                        className={`primary-btn ${isSoldOut ? 'disabled' : ''}`}
-                        style={{ flex: 2, padding: '1rem', opacity: isSoldOut ? 0.6 : 1, cursor: isSoldOut ? 'not-allowed' : 'pointer' }}
+                        className={`outline-btn ${isSoldOut ? 'disabled' : ''}`}
+                        style={{ flex: 1, padding: '1rem', opacity: isSoldOut ? 0.6 : 1, cursor: isSoldOut ? 'not-allowed' : 'pointer' }}
                         disabled={isSoldOut}
                         onClick={() => addToCart(product)}
                     >
                         {isSoldOut ? 'Notify When Available' : 'Add to Bag'}
                     </button>
+                    {!isSoldOut && (
+                        <button
+                            className="primary-btn"
+                            style={{ flex: 1, padding: '1rem' }}
+                            onClick={handleBuyNow}
+                        >
+                            Buy Now
+                        </button>
+                    )}
                 </div>
 
                 <div className="extra-details" style={{ marginTop: '2rem', borderTop: '1px solid var(--clr-border)' }}>
