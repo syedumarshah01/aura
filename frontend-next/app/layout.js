@@ -1,5 +1,6 @@
 import './globals.css';
 import { Outfit, Playfair_Display } from 'next/font/google';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { CartProvider } from '../context/CartContext';
 import Toast from '../components/Toast';
 import LayoutShell from '../components/LayoutShell';
@@ -75,6 +76,7 @@ export default function RootLayout({ children }) {
                 <CartProvider>
                     <LayoutShell>
                         {children}
+                        <SpeedInsights />
                     </LayoutShell>
                     <Toast />
                 </CartProvider>
