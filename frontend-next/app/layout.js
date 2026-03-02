@@ -21,6 +21,9 @@ const playfair = Playfair_Display({
 export const metadata = {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://ophelie.com'),
     title: 'Ophélie | Premium Beauty & Cosmetics',
+    verification: {
+        google: 'NJec_KtTf73yJi-b_qHJcsnmxatY7zbD0HUjZDPoKJc',
+    },
     description: 'Discover premium beauty and skincare products tailored for your glow. Ethical, clean, and meticulously curated.',
     keywords: ['beauty', 'cosmetics', 'skincare', 'makeup', 'ethical', 'clean beauty', 'Ophélie'],
     alternates: {
